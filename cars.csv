@@ -1,0 +1,151 @@
+Make,Model,Type,Monthly Cost,Size
+Renault,Kangoo,Car Van,$923.00,Large
+Peugeot,Partner,Car Van,$961.00,Large
+Hyundai,i20 N,Hatchback,"$1,051.00",Small
+LDV,G10,Panel Van,"$1,066.00",Large
+Volkswagen,Golf,Station Wagon,"$1,087.00",Large
+Mazda,Mazda6,Sedan,"$1,098.00",Small
+Volkswagen COMM,Caddy Cargo,Car Van,"$1,108.00",Large
+Toyota,Prius,Hatchback,"$1,117.00",Small
+Toyota,Prius v,Mini MPV,"$1,127.00",Large
+Mazda,Mazda6,Station Wagon,"$1,128.00",Large
+SsangYong,Musso,Pick-Up,"$1,128.00",Ute
+LDV,T60,Pick-Up,"$1,140.00",Ute
+Citroen,C4,Hatchback,"$1,144.00",Small
+Skoda,Octavia,Hatchback,"$1,154.00",Small
+LDV,T60 Max,Pick-Up,"$1,157.00",Ute
+Subaru,Levorg,Station Wagon,"$1,169.00",Large
+Hyundai,IONIQ Hybrid,Hatchback,"$1,186.00",Small
+Skoda,Octavia,Station Wagon,"$1,188.00",Large
+Mitsubishi,Triton,Pick-Up,"$1,211.00",Ute
+Subaru,Outback,Station Wagon,"$1,220.00",Large
+FIAT,500 C,Convertible,"$1,239.00",Sports
+Mahindra,Pik-Up,Pick-Up,"$1,239.00",Ute
+Volkswagen COMM,Transporter,Panel Van,"$1,242.00",Large
+Subaru,WRX,Sedan,"$1,273.00",Small
+Volkswagen COMM,Caddy Van,Combi,"$1,285.00",Large
+Hyundai,IONIQ Plug-in Hybrid,Hatchback,"$1,286.00",Small
+Hyundai,i30 Fastback N,Hatchback,"$1,293.00",Small
+Hyundai,IONIQ Electric,Hatchback,"$1,314.00",Small
+Nissan,Leaf,Hatchback,"$1,314.00",Small
+Audi,A3,Hatchback,"$1,316.00",Small
+Volkswagen,Caddy,Mini MPV,"$1,334.00",Large
+Honda,Odyssey,MPV,"$1,341.00",Large
+Hyundai,i30 N,Hatchback,"$1,344.00",Small
+Toyota,Hilux,Pick-Up,"$1,357.00",Ute
+BMW,1 Series,Hatchback,"$1,364.00",Small
+Nissan,Navara,Pick-Up,"$1,383.00",Ute
+Ford,Focus,Hatchback,"$1,390.00",Small
+KIA,Carnival,MPV,"$1,393.00",Large
+Volkswagen,Passat,Sedan,"$1,396.00",Small
+Volkswagen,Passat,Sedan,"$1,396.00",Small
+Mercedes-Benz,A-Class,Hatchback,"$1,402.00",Small
+Mercedes-Benz,A-Class,Hatchback,"$1,402.00",Small
+Toyota,Hiace,Combi,"$1,422.00",Large
+Volkswagen,Passat Alltrack,Station Wagon,"$1,425.00",Large
+Hyundai,Staria,MPV,"$1,426.00",Large
+KIA,Stinger,Hatchback,"$1,435.00",Small
+KIA,Stinger,Hatchback,"$1,435.00",Small
+Mercedes-Benz,B-Class,Mini MPV,"$1,444.00",Small
+Mercedes-Benz,B-Class,Mini MPV,"$1,444.00",Small
+Hyundai,Sonata,Sedan,"$1,455.00",Small
+Hyundai,Sonata,Sedan,"$1,455.00",Small
+Ford,Transit,Panel Van,"$1,460.00",Large
+Skoda,Superb,Hatchback,"$1,463.00",Small
+Skoda,Superb,Hatchback,"$1,463.00",Small
+BMW,2 Series Gran Coupe,Sedan,"$1,475.00",Small
+BMW,2 Series Gran Coupe,Sedan,"$1,475.00",Small
+Honda,Accord,Sedan,"$1,499.00",Small
+Honda,Accord,Sedan,"$1,499.00",Small
+Isuzu Ute,D-MAX,Pick-Up,"$1,499.00",Ute
+Ford,Ranger,Pick-Up,"$1,501.00",Ute
+Skoda,Superb,Station Wagon,"$1,503.00",Large
+Toyota,86,Coupe,"$1,516.00",Sports
+Polestar,2,Hatchback,"$1,521.00",Small
+Polestar,2,Hatchback,"$1,521.00",Small
+Renault,Megane,Hatchback,"$1,528.00",Small
+Renault,Megane,Hatchback,"$1,528.00",Small
+Ford,Transit Custom,Combi,"$1,529.00",Large
+Volkswagen COMM,Amarok,Pick-Up,"$1,533.00",Ute
+Subaru,WRX STI,Sedan,"$1,547.00",Small
+Subaru,WRX STI,Sedan,"$1,547.00",Small
+Volkswagen,Passat,Station Wagon,"$1,557.00",Large
+Audi,A4,Sedan,"$1,573.00",Small
+Audi,A4,Sedan,"$1,573.00",Small
+Mercedes,Vito,Combi,"$1,580.00",Large
+Tesla,Model 3,Sedan,"$1,606.00",Small
+Tesla,Model 3,Sedan,"$1,606.00",Small
+Peugeot,508,Sedan,"$1,608.00",Small
+Peugeot,508,Sedan,"$1,608.00",Small
+Hyundai,Genesis,Sedan,"$1,647.00",Small
+Hyundai,Genesis,Sedan,"$1,647.00",Small
+Peugeot,508,Station Wagon,"$1,654.00",Large
+Lexus,ES,Sedan,"$1,662.00",Small
+Volkswagen COMM,Multivan,MPV,"$1,684.00",Large
+Volvo,S60,Sedan,"$1,690.00",Small
+Mini,Cooper,Convertible,"$1,693.00",Sports
+Alfa Romeo,Giulia,Sedan,"$1,701.00",Small
+Volkswagen,Arteon Shooting Brake,Station Wagon,"$1,703.00",Large
+Mazda,MX-5,Roadster,"$1,706.00",Sports
+Mazda,BT-50,Pick-Up,"$1,709.00",Ute
+Mercedes,Valente,MPV,"$1,741.00",Large
+Toyota,Granvia,MPV,"$1,747.00",Large
+Volvo,V60 Cross Country,Station Wagon,"$1,747.00",Large
+Subaru,BRZ,Coupe,"$1,769.00",Sports
+Jaguar,XE,Sedan,"$1,787.00",Small
+Jeep,Gladiator,Pick-Up,"$1,793.00",Ute
+Mercedes-Benz,CLA,Coupe,"$1,794.00",Sports
+Mercedes-Benz,CLA,Coupe,"$1,794.00",Sports
+Audi,S3,Hatchback,"$1,842.00",Small
+Hyundai,Genesis,Sedan,"$1,846.00",Large
+BMW,3 Series,Sedan,"$1,855.00",Small
+Audi,A4 Allroad Quattro,Station Wagon,"$1,860.00",Large
+Audi,A4,Station Wagon,"$1,899.00",Large
+Audi,A5,Hatchback,"$1,906.00",Small
+BMW,4 Series,Coupe,"$1,928.00",Sports
+BMW,4 Series,Coupe,"$1,928.00",Sports
+Mercedes-Benz,C-Class,Coupe,"$2,056.00",Sports
+Mercedes-Benz,C-Class,Coupe,"$2,056.00",Sports
+Mercedes,Marco Polo,Camper,"$2,064.00",Large
+Mercedes-Benz,C-Class,Sedan,"$2,098.00",Small
+Audi,A5,Coupe,"$2,114.00",Sports
+Audi,A5,Coupe,"$2,114.00",Sports
+BMW,3 Series,Station Wagon,"$2,146.00",Large
+Jaguar,XF,Sedan,"$2,150.00",Small
+Audi,TT,Coupe,"$2,219.00",Sports
+Ford,Mustang,Coupe,"$2,230.00",Sports
+Toyota,GR Supra,Coupe,"$2,251.00",Sports
+RAM,1500,Pick-Up,"$2,283.00",Ute
+Audi,A6,Sedan,"$2,285.00",Small
+Volkswagen,California,Camper,"$2,311.00",Large
+BMW,Z4,Roadster,"$2,314.00",Sports
+BMW,2 Series,Coupe,"$2,322.00",Sports
+Audi,RS3,Hatchback,"$2,347.00",Small
+Mercedes,Sprinter,Panel Van,"$2,353.00",Large
+BMW,5 Series,Station Wagon,"$2,441.00",Large
+Jaguar,XF,Station Wagon,"$2,482.00",Large
+Mercedes-Benz,V-Class,MPV,"$2,492.00",Large
+Volkswagen,Arteon,Coupe,"$2,509.00",Sports
+BMW,i4 Gran Coupe,Coupe,"$2,525.00",Sports
+Mercedes-Benz,GLC Coupe,Coupe,"$2,588.00",Sports
+Audi,S4,Sedan,"$2,593.00",Large
+Mercedes-Benz,E-Class,Sedan,"$2,620.00",Small
+Renault,A110,Coupe,"$2,634.00",Sports
+BMW,5 Series,Sedan,"$2,661.00",Small
+Audi,TTS,Coupe,"$2,666.00",Sports
+Mercedes-Benz,CLA,Coupe,"$2,690.00",Sports
+Audi,S5,Hatchback,"$2,766.00",Small
+Audi,S5,Coupe,"$2,798.00",Sports
+Mercedes-Benz,E-Class,Coupe,"$2,814.00",Sports
+Audi,A6 Allroad Quattro,Station Wagon,"$2,885.00",Large
+BMW,4 Series,Coupe,"$2,918.00",Sports
+Audi,A7,Hatchback,"$2,940.00",Small
+Audi,A6,Sedan,"$2,985.00",Large
+Chevrolet,Silverado,Pick-Up,"$3,068.00",Ute
+Mercedes-Benz,C-Class,Coupe,"$3,174.00",Sports
+Jaguar,F-Type,Coupe,"$3,185.00",Sports
+Audi,A5,Coupe,"$3,296.00",Sports
+Audi,TT RS,Coupe,"$3,480.00",Sports
+Audi,TT,Coupe,"$3,517.00",Sports
+Toyota,GR Supra,Coupe,"$3,595.00",Sports
+#######,"Secret ""Car""",not a car,"$100,000.00",Extremely Large

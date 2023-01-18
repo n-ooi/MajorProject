@@ -1,0 +1,313 @@
+WindowManager:
+    Login:
+    SignUp:
+    Calc:
+
+<Login>:
+    name: "login"
+    MDBoxLayout:
+        orientation: "horizontal"
+        BoxLayout:
+            #elevation: 0
+            #md_bg_color: 1,1,1,1
+            orientation: "vertical"
+            padding: "70dp","160dp", "70dp", "160dp"
+            spacing: "40dp"
+            MDLabel:
+                text: "Login"
+                font_size: "40dp"
+                bold: True
+
+            BoxLayout:
+                orientation: "vertical"
+                spacing: "0dp"
+
+
+                MDCard:
+                    orientation: "vertical"
+                    padding: "40dp","12dp"
+                    height: root.height*0.08
+                    MDLabel:
+                        text: "Email"
+                        font_size: "18dp"
+                    MDTextField:
+                        id: LoginEmail
+                        line_color_focus: .9,.3,.3,1
+                        font_size: "15dp"
+
+
+            BoxLayout:
+                orientation: "vertical"
+
+                MDCard:
+                    orientation: "vertical"
+                    padding: "40dp","12dp"
+                    MDLabel:
+                        text: "Password"
+                        font_size: "18dp"
+                    MDTextField:
+                        id: LoginPassword
+                        line_color_focus: .9,.3,.3,1
+                        font_size: "15dp"
+                        password: True
+
+
+
+            MDRaisedButton:
+                text: "Login"
+                font_size: "20dp"
+                md_bg_color: .9,.3,.3,1
+                text_color: "white"
+                pos_hint: {'center_x': .5}
+                width: root.width*0.4
+                height: root.height*0.07
+                size_hint: None, None
+                on_release:
+                    app.root.current = "Calc" # Disable when testing!
+                    root.login_validation(LoginEmail.text, LoginPassword.text, root)
+                    root.manager.screens[2].ids.my_Label.text = "Welcome " + root.ids.LoginEmail.text
+                    root.manager.transition.direction = "down"
+
+
+
+            Button:
+                text: "Haven't got an account? Sign Up"
+                background_normal: ''
+                font_size: "15dp"
+                color: .9,.3,.3,1
+                underline: True
+                pos_hint: {'center_x': .5}
+                width: root.width*0.15
+                height: root.height*0.02
+                size_hint: None, None
+                on_release:
+                    app.root.current = "signup"
+                    root.manager.transition.direction = "down"
+
+
+        BoxLayout:
+            elevation: 0
+            size_hint: 0.8,1
+            # md_bg_color: 1,1,1,0
+            padding: "100dp"
+            canvas.before:
+                Rectangle:
+                    source: "1x/Artboard 1.png"
+                    size: self.size
+                    pos: self.pos
+
+<SignUp>:
+    name: "signup"
+    MDBoxLayout:
+        orientation: "horizontal"
+        BoxLayout:
+            #md_bg_color: 1,1,1,1
+            orientation: "vertical"
+            padding: "70dp","140dp", "70dp", "120dp"
+            spacing: "30dp"
+            MDLabel:
+                text: "Sign Up"
+                font_size: "40dp"
+                bold: True
+
+            BoxLayout:
+                orientation: "vertical"
+                spacing: "0dp"
+
+
+                MDCard:
+                    orientation: "vertical"
+                    padding: "40dp","12dp"
+                    height: root.height*0.08
+                    MDLabel:
+                        text: "Email"
+                        font_size: "18dp"
+                    MDTextField:
+                        id: SignUpEmail
+                        line_color_focus: .9,.3,.3,1
+                        font_size: "15dp"
+
+            BoxLayout:
+                orientation: "vertical"
+
+                MDCard:
+                    orientation: "vertical"
+                    padding: "40dp","12dp"
+                    MDLabel:
+                        text: "Password"
+                        font_size: "18dp"
+                    MDTextField:
+                        id: SignUpPassword1
+                        line_color_focus: .9,.3,.3,1
+                        font_size: "15dp"
+                        password: True
+
+            BoxLayout:
+                orientation: "vertical"
+
+                MDCard:
+                    orientation: "vertical"
+                    padding: "40dp","12dp"
+                    MDLabel:
+                        text: "Confirm Password"
+                        font_size: "18dp"
+                    MDTextField:
+                        id: SignUpPassword2
+                        line_color_focus: .9,.3,.3,1
+                        font_size: "15dp"
+                        password: True
+
+            MDRaisedButton:
+                text: "Sign Up"
+                font_size: "20dp"
+                md_bg_color: .9,.3,.3,1
+                text_color: "white"
+                pos_hint: {'center_x': .5}
+                width: root.width*0.4
+                height: root.height*0.07
+                size_hint: None, None
+                disabled: False
+                on_release:
+                    # app.root.current = "Calc"
+                    # root.manager.transition.direction = "down"
+                   # root.signup_validation(SignUpEmail.text, SignUpPassword1.text, root)
+                    root.signupbtn(SignUpEmail.text, SignUpPassword1.text, SignUpPassword2.text, root)
+
+            Button:
+                text: "Already have an account? Login"
+                background_normal: ''
+                background_active: False
+                font_size: "15dp"
+                color: .9,.3,.3,1
+                underline: True
+                pos_hint: {'center_x': .5}
+                width: root.width*0.15
+                height: root.height*0.02
+                size_hint: None, None
+                on_release:
+                    app.root.current = "login"
+                    root.manager.transition.direction = "up"
+
+
+        BoxLayout:
+            elevation: 0
+            size_hint: 0.8,1
+            # md_bg_color: .9,.3,.3,1
+            padding: "100dp"
+            canvas.before:
+                Rectangle:
+                    source: "1x/Artboard 2.png"
+                    size: self.size
+                    pos: self.pos
+
+
+
+
+
+
+
+
+
+<Calc>:
+    #background_normal: ''
+    name: "Calc"
+    Screen:
+        #background_normal: ''
+        ScrollView:
+            #background_normal: ''
+            scroll_wheel_distance: 40
+            effect_cls: 'DampedScrollEffect'
+            size: self.size
+            canvas.before:
+                Color:
+                    rgb: 229/255,60/255,40/255,1
+                Rectangle:
+                    size: self.size
+            GridLayout:
+                size_hint_y: None
+                cols: 1
+                padding: "80dp"
+                spacing: "80dp"
+                height: self.minimum_height
+                width: self.minimum_width
+
+##########################################################################################################
+                BoxLayout:
+                    padding: "150dp","20dp"
+                    orientation: "horizontal"
+                    Label:
+                        size_hint: .9,1
+                        text: "Novated Lease"
+                        font_name: "font.otf"
+                        bold: True
+                        font_size: "40dp"
+                    Button:
+                        text: "Menu"
+                        font_name: "font.otf"
+                        bold: True
+                        font_size: "25dp"
+                        size_hint: .3,None
+                        pos_hint: {"center_y": 0.1}
+                        height: "50dp"
+                        background_color: (0,0,0,0)
+                        background_normal: ""
+                        canvas.before:
+                            Color:
+                                rgba: 1,1,1,.2
+                            RoundedRectangle:
+                                size: self.size
+                                pos: self.pos
+                                radius: [50]
+                    Label:
+
+                    Button:
+                        text: "Login and Sign Up"
+                        font_name: "font.otf"
+                        bold: True
+                        font_size: "25dp"
+                        size_hint: .75,None
+                        pos_hint: {"center_y": 0.1}
+                        height: "50dp"
+                        background_color: (0,0,0,0)
+                        background_normal: ""
+                        canvas.before:
+                            Color:
+                                rgba: 1,1,1,.2
+                            RoundedRectangle:
+                                size: self.size
+                                pos: self.pos
+                                radius: [50]
+                        on_release:
+                            app.root.current = "login"
+
+
+                MDCard:
+                    orientation: "vertical"
+                    height: "200dp"
+                    size_hint: 1,None
+                    radius: [50]
+                    md_bg_color: 1,1,1,1
+                    Label:
+                        id: my_Label
+                        text: "hi"
+                        font_size: "80dp"
+                        font_name: "font.otf"
+                        color: 0,0,0,1
+                MDCard:
+                    orientation: "vertical"
+                    height: "500dp"
+                    size_hint: 1,None
+                    radius: [50]
+                    md_bg_color: 1,1,1,1
+                MDCard:
+                    orientation: "vertical"
+                    height: "500dp"
+                    size_hint: 1,None
+                    radius: [50]
+                    md_bg_color: 1,1,1,1
+                MDCard:
+                    orientation: "vertical"
+                    height: "500dp"
+                    size_hint: 1,None
+                    radius: [50]
+                    md_bg_color: 1,1,1,1
