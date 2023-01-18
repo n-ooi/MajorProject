@@ -41,6 +41,7 @@ class Login(Screen):
                 print("Password Correct")
             else:
                 print("Password Incorrect")
+                self.loginFail()
 
 
 class SignUp(Screen):

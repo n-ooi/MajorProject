@@ -32,7 +32,7 @@ WindowManager:
                         font_size: "18dp"
                     MDTextField:
                         id: LoginEmail
-                        line_color_focus: .9,.3,.3,1
+                        line_color_focus: 229/255,60/255,40/255,1
                         font_size: "15dp"
 
 
@@ -47,7 +47,7 @@ WindowManager:
                         font_size: "18dp"
                     MDTextField:
                         id: LoginPassword
-                        line_color_focus: .9,.3,.3,1
+                        line_color_focus: 229/255,60/255,40/255,1
                         font_size: "15dp"
                         password: True
 
@@ -56,7 +56,7 @@ WindowManager:
             MDRaisedButton:
                 text: "Login"
                 font_size: "20dp"
-                md_bg_color: .9,.3,.3,1
+                md_bg_color: 229/255,60/255,40/255,1
                 text_color: "white"
                 pos_hint: {'center_x': .5}
                 width: root.width*0.4
@@ -74,7 +74,7 @@ WindowManager:
                 text: "Haven't got an account? Sign Up"
                 background_normal: ''
                 font_size: "15dp"
-                color: .9,.3,.3,1
+                color: 229/255,60/255,40/255,1
                 underline: True
                 pos_hint: {'center_x': .5}
                 width: root.width*0.15
@@ -124,7 +124,7 @@ WindowManager:
                         font_size: "18dp"
                     MDTextField:
                         id: SignUpEmail
-                        line_color_focus: .9,.3,.3,1
+                        line_color_focus: 229/255,60/255,40/255,1
                         font_size: "15dp"
 
             BoxLayout:
@@ -138,7 +138,7 @@ WindowManager:
                         font_size: "18dp"
                     MDTextField:
                         id: SignUpPassword1
-                        line_color_focus: .9,.3,.3,1
+                        line_color_focus: 229/255,60/255,40/255,1
                         font_size: "15dp"
                         password: True
 
@@ -153,14 +153,14 @@ WindowManager:
                         font_size: "18dp"
                     MDTextField:
                         id: SignUpPassword2
-                        line_color_focus: .9,.3,.3,1
+                        line_color_focus: 229/255,60/255,40/255,1
                         font_size: "15dp"
                         password: True
 
             MDRaisedButton:
                 text: "Sign Up"
                 font_size: "20dp"
-                md_bg_color: .9,.3,.3,1
+                md_bg_color: 229/255,60/255,40/255,1
                 text_color: "white"
                 pos_hint: {'center_x': .5}
                 width: root.width*0.4
@@ -178,7 +178,7 @@ WindowManager:
                 background_normal: ''
                 background_active: False
                 font_size: "15dp"
-                color: .9,.3,.3,1
+                color: 229/255,60/255,40/255,1
                 underline: True
                 pos_hint: {'center_x': .5}
                 width: root.width*0.15
@@ -192,7 +192,7 @@ WindowManager:
         BoxLayout:
             elevation: 0
             size_hint: 0.8,1
-            # md_bg_color: .9,.3,.3,1
+            # md_bg_color: 229/255,60/255,40/255,1
             padding: "100dp"
             canvas.before:
                 Rectangle:
@@ -227,7 +227,7 @@ WindowManager:
                 size_hint_y: None
                 cols: 1
                 padding: "80dp"
-                spacing: "80dp"
+                spacing: "40dp"
                 height: self.minimum_height
                 width: self.minimum_width
 
@@ -281,33 +281,154 @@ WindowManager:
                             app.root.current = "login"
 
 
-                MDCard:
-                    orientation: "vertical"
-                    height: "200dp"
-                    size_hint: 1,None
-                    radius: [50]
-                    md_bg_color: 1,1,1,1
-                    Label:
+                CalculatorCategory: # Introduction
+                    size_hint: 1, None
+                    height: "120dp"
+                    Title1:
                         id: my_Label
                         text: "hi"
-                        font_size: "80dp"
-                        font_name: "font.otf"
-                        color: 0,0,0,1
-                MDCard:
-                    orientation: "vertical"
-                    height: "500dp"
+
+                BoxLayout:
                     size_hint: 1,None
-                    radius: [50]
-                    md_bg_color: 1,1,1,1
-                MDCard:
-                    orientation: "vertical"
-                    height: "500dp"
+                    height: "200dp"
+                    spacing: "40dp"
+
+                    CalculatorCategory: # Budget
+                        height: "250dp"
+                        Title2:
+                            text: "Budget (monthly cost)"
+                        MDSlider:
+                            hint: False
+                            color: 229/255,60/255,40/255,1
+                            min: 0
+                            max: 5000
+                            step: 100
+                            id: leaseBudget
+                        Title4:
+                            font_size: "20dp"
+                            text: "$" + str(int(leaseBudget.value))
+
+                    CalculatorCategory: # Annual Distance Travelled
+                        height: "250dp"
+                        Title2:
+                            text: "Annual Distance Travelled"
+                        MDSlider:
+                            hint: False
+                            color: 229/255,60/255,40/255,1
+                            min: 0
+                            max: 100000
+                            step: 10
+                            id: annualDistance
+                        Title4:
+                            font_size: "20dp"
+                            text: str(int(annualDistance.value)) + " km"
+
+                BoxLayout:
                     size_hint: 1,None
-                    radius: [50]
-                    md_bg_color: 1,1,1,1
-                MDCard:
-                    orientation: "vertical"
-                    height: "500dp"
-                    size_hint: 1,None
-                    radius: [50]
-                    md_bg_color: 1,1,1,1
+                    height: "250dp"
+                    spacing: "40dp"
+
+                    CalculatorCategory: # Term (length of lease)
+                        height: "250dp"
+                        Title2:
+                            text: "Term (length of lease [months])"
+                            id: termLength
+                        GridLayout:
+                            cols: 4
+                            Check:
+                                group: 'lengthTerm'
+                                on_release:
+                                    print("12 months", self.active)
+                            Check:
+                                group: 'lengthTerm'
+                                on_release:
+                                    print("24 months", self.active)
+                            Check:
+                                group: 'lengthTerm'
+                                on_release:
+                                    print("36 months", self.active)
+                            Check:
+                                group: 'lengthTerm'
+                                on_release:
+                                    print("48 months", self.active)
+                            Title4:
+                                text: "12 months"
+                            Title4:
+                                text: "24 months"
+                            Title4:
+                                text: "36 months"
+                            Title4:
+                                text: "48 months"
+
+                    CalculatorCategory: # Car Size
+                        height: "250dp"
+                        Title2:
+                            text: "Car Size (for fuel calculations)"
+                            id: carSize
+
+                        GridLayout:
+                            cols: 4
+                            Check:
+                                group: 'carSize'
+                                on_release:
+                                    print("Small", self.active)
+                            Check:
+                                group: 'carSize'
+                                on_release:
+                                    print("Medium", self.active)
+                            Check:
+                                group: 'carSize'
+                                on_release:
+                                    print("Large", self.active)
+                            Check:
+                                group: 'carSize'
+                                on_release:
+                                    print("Sports", self.active)
+                            Title4:
+                                text: "Small"
+                            Title4:
+                                text: "Medium"
+                            Title4:
+                                text: "Large"
+                            Title4:
+                                text: "Sports"
+
+                CalculatorCategory: # Salary and Residual
+                    height: "250dp"
+                    size_hint: 1, None
+                    Title2:
+                        text: "Salary and Residual"
+                    MDSlider:
+                        hint: True
+                        color: 229/255,60/255,40/255,1
+                        hint_text_color: "white"
+                        hint_bg_color: "red"
+                        id: salaryResidual
+
+
+<Title1@Label>:
+    font_size: "80dp"
+    font_name: "font.otf"
+    color: 0,0,0,1
+
+<Title2@Label>:
+    font_size: "30dp"
+    font_name: "font.otf"
+    color: 0,0,0,1
+
+<Title4@Label>:
+    font_size: "15dp"
+    font_name: "font.otf"
+    color: 0,0,0,1
+
+<CalculatorCategory@MDCard>:
+    padding: "120dp","30dp"
+    radius: [50]
+    md_bg_color: 1,1,1,1
+    orientation: "vertical"
+
+<Check@MDCheckbox>:
+    size_hint: 1, None
+    height: "10dp"
+    size: "48dp", "48dp"
+    selected_color: 229/255,60/255,40/255,1
