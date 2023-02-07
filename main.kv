@@ -63,9 +63,9 @@ WindowManager:
                 height: root.height*0.07
                 size_hint: None, None
                 on_release:
-                    app.root.current = "Calc" # Disable when testing!
+                    # app.root.current = "Calc" # Disable when testing!
                     root.login_validation(LoginEmail.text, LoginPassword.text, root)
-                    root.manager.screens[2].ids.my_Label.text = "Welcome " + root.ids.LoginEmail.text
+                    root.manager.screens[2].ids.my_Label.text = "Welcome " + (root.ids.LoginEmail.text).partition("@")[0]
                     root.manager.transition.direction = "down"
 
 
@@ -109,6 +109,7 @@ WindowManager:
                 text: "Sign Up"
                 font_size: "40dp"
                 bold: True
+                id: label
 
             BoxLayout:
                 orientation: "vertical"
@@ -283,10 +284,15 @@ WindowManager:
 
                 CalculatorCategory: # Introduction
                     size_hint: 1, None
-                    height: "120dp"
+                    height: "200dp"
                     Title1:
                         id: my_Label
                         text: "hi"
+                    Title1:
+                        text: "Please select your preferences"
+                        font_size: "40dp"
+                        bold: False
+                        italic: True
 
                 BoxLayout:
                     size_hint: 1,None

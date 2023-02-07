@@ -46,6 +46,9 @@ class Login(Screen):
 
 class SignUp(Screen):
     def on_enter(self):
+        self.clearValues()
+
+    def clearValues(self):
         pass
 
     def passwordMismatch(self):
@@ -63,7 +66,7 @@ class SignUp(Screen):
         if SignUpPassword2 != SignUpPassword1:
             self.passwordMismatch()
         else:
-            if SignUpEmail != "" and SignUpPassword1 != "":
+            if SignUpEmail and SignUpPassword1:
                 if SignUpEmail not in users['Email'].unique():
                     # if email does not exist already then append to the csv file
                     MDApp.get_running_app().switch_screen("login") # to change current screen to log in the user now
