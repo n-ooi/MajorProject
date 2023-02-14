@@ -318,8 +318,8 @@ WindowManager:
                             hint: False
                             color: 229/255,60/255,40/255,1
                             min: 0
-                            max: 5000
-                            step: 100
+                            max: 50000
+                            step: 500
                             id: leaseBudget
                         Title4:
                             font_size: "20dp"
@@ -333,8 +333,8 @@ WindowManager:
                             hint: False
                             color: 229/255,60/255,40/255,1
                             min: 0
-                            max: 100000
-                            step: 10
+                            max: 200000
+                            step: 1000
                             id: annualDistance
                         Title4:
                             font_size: "20dp"
@@ -428,7 +428,13 @@ WindowManager:
                         color: 229/255,60/255,40/255,1
                         hint_text_color: "white"
                         hint_bg_color: "red"
+                        min: 0
+                        max: 300000
+                        step: 5000
                         id: salaryResidual
+                    Title4:
+                        font_size: "20dp"
+                        text: "$" + str(int(salaryResidual.value))
 
                 CalculatorCategory:
                     height: "250dp"
