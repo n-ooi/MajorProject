@@ -14,25 +14,51 @@ class Calc(Screen):
     def on_enter(self):
         pass
 
+    def calc_values(self, leaseBudget, annualDistance, term1, term2, term3, term4, size1, size2, size3, size4, salaryResidual):
+        term, size = 0
+        print('\n\n'+str(int(leaseBudget)))
+        print(int(annualDistance))
+        for i in (f'12 months {term1}', f'24 months {term2}', f'36 months {term3}', f'48 months {term4}'):
+            if "True" in i:
+                print(str(i.replace("True", "")))
+                term = i
+
+        for i in (f'small {size1}', f'medium {size2}', f'large {size3}', f'sports {size4}'):
+            if "True" in i:
+                print(str(i.replace("True", "")))
+                size = i
+        print(int(salaryResidual))
+
+        car_cost_GST = leaseBudget
+        business_percentage = 0
+        taxable_income = salaryResidual
+        residual_value = ("65%", "56%", "46%", "37%")
+        kms_travelled_per_year = annualDistance
+        lease_term = term
+        novated_interest_rate = "between 5% and 10%"
+        standard_interest_rate = "between 3% and 4%"
+        monthly_fee = 20
+        car_size = size
+
 
 class Login(Screen):
     def on_enter(self):
         pass
 
     def loginFail(self):
-        window = MDDialog(text="Email or Password are incorrect.", )
+        window = MDDialog(text="Username or Password are incorrect.", )
         window.open()
 
-    def login_validation(self, LoginEmail, LoginPassword, root):
+    def login_validation(self, LoginUsername, LoginPassword, root):
         check = pd.read_csv('login-details.csv')
-        print(LoginEmail)
+        print(LoginUsername)
         print(LoginPassword)
-        if LoginEmail not in check['Email'].unique():
-            print("Email not found")
+        if LoginUsername not in check['Username'].unique():
+            print("Username not found")
             self.loginFail()
-            pass # deny access (email not registered)
+            pass # deny access (Username not registered)
         else:
-            user_info = check[['Email', 'Password']][check['Email'] == LoginEmail]
+            user_info = check[['Username', 'Password']][check['Username'] == LoginUsername]
             print(user_info)
             user_password = list(str(user_info).split(" "))[-1]
             print(user_password)
@@ -59,19 +85,19 @@ class SignUp(Screen):
         window = MDDialog(text="Some fields are missing or incorrect.", )
         window.open()
 
-    def signupbtn(self, SignUpEmail, SignUpPassword1, SignUpPassword2, root):
+    def signupbtn(self, SignUpUsername, SignUpPassword1, SignUpPassword2, root):
         # creating a DataFrame of the info
-        user = pd.DataFrame([[SignUpEmail, SignUpPassword1]],
-                            columns=['Email', 'Password'])
+        user = pd.DataFrame([[SignUpUsername, SignUpPassword1]],
+                            columns=['Username', 'Password'])
         if SignUpPassword2 != SignUpPassword1:
             self.passwordMismatch()
         else:
-            if SignUpEmail and SignUpPassword1:
-                if SignUpEmail not in users['Email'].unique():
-                    # if email does not exist already then append to the csv file
+            if SignUpUsername and SignUpPassword1:
+                if SignUpUsername not in users['Username'].unique():
+                    # if Username does not exist already then append to the csv file
                     MDApp.get_running_app().switch_screen("login") # to change current screen to log in the user now
                     user.to_csv('login-details.csv', mode='a', header=False, index=False)
-                    # self.SignUpEmail.text = ""
+                    # self.SignUpUsername.text = ""
                     # self.SignUpPassword1.text = ""
             else:
                 self.missingFields()

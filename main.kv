@@ -28,10 +28,10 @@ WindowManager:
                     padding: "40dp","12dp"
                     height: root.height*0.08
                     MDLabel:
-                        text: "Email"
+                        text: "Username"
                         font_size: "18dp"
                     MDTextField:
-                        id: LoginEmail
+                        id: LoginUsername
                         line_color_focus: 229/255,60/255,40/255,1
                         font_size: "15dp"
 
@@ -64,9 +64,11 @@ WindowManager:
                 size_hint: None, None
                 on_release:
                     # app.root.current = "Calc" # Disable when testing!
-                    root.login_validation(LoginEmail.text, LoginPassword.text, root)
-                    root.manager.screens[2].ids.my_Label.text = "Welcome " + (root.ids.LoginEmail.text).partition("@")[0]
+                    root.login_validation(LoginUsername.text, LoginPassword.text, root)
+                    root.manager.screens[2].ids.my_Label.text = "Welcome " + (root.ids.LoginUsername.text).partition("@")[0]
                     root.manager.transition.direction = "down"
+                    root.ids.LoginUsername.text = ""
+                    root.ids.LoginPassword.text = ""
 
 
 
@@ -83,6 +85,8 @@ WindowManager:
                 on_release:
                     app.root.current = "signup"
                     root.manager.transition.direction = "down"
+                    root.ids.LoginUsername.text = ""
+                    root.ids.LoginPassword.text = ""
 
 
         BoxLayout:
@@ -121,10 +125,10 @@ WindowManager:
                     padding: "40dp","12dp"
                     height: root.height*0.08
                     MDLabel:
-                        text: "Email"
+                        text: "Username"
                         font_size: "18dp"
                     MDTextField:
-                        id: SignUpEmail
+                        id: SignUpUsername
                         line_color_focus: 229/255,60/255,40/255,1
                         font_size: "15dp"
 
@@ -171,8 +175,11 @@ WindowManager:
                 on_release:
                     # app.root.current = "Calc"
                     # root.manager.transition.direction = "down"
-                   # root.signup_validation(SignUpEmail.text, SignUpPassword1.text, root)
-                    root.signupbtn(SignUpEmail.text, SignUpPassword1.text, SignUpPassword2.text, root)
+                   # root.signup_validation(SignUpUsername.text, SignUpPassword1.text, root)
+                    root.signupbtn(SignUpUsername.text, SignUpPassword1.text, SignUpPassword2.text, root)
+                    root.ids.SignUpUsername.text = ""
+                    root.ids.SignUpPassword1.text = ""
+                    root.ids.SignUpPassword2.text = ""
 
             Button:
                 text: "Already have an account? Login"
@@ -188,6 +195,10 @@ WindowManager:
                 on_release:
                     app.root.current = "login"
                     root.manager.transition.direction = "up"
+                    root.ids.SignUpUsername.text = ""
+                    root.ids.SignUpPassword1.text = ""
+                    root.ids.SignUpPassword2.text = ""
+
 
 
         BoxLayout:
@@ -343,18 +354,22 @@ WindowManager:
                             cols: 4
                             Check:
                                 group: 'lengthTerm'
+                                id: term1
                                 on_release:
                                     print("12 months", self.active)
                             Check:
                                 group: 'lengthTerm'
+                                id: term2
                                 on_release:
                                     print("24 months", self.active)
                             Check:
                                 group: 'lengthTerm'
+                                id: term3
                                 on_release:
                                     print("36 months", self.active)
                             Check:
                                 group: 'lengthTerm'
+                                id: term4
                                 on_release:
                                     print("48 months", self.active)
                             Title4:
@@ -376,18 +391,22 @@ WindowManager:
                             cols: 4
                             Check:
                                 group: 'carSize'
+                                id: size1
                                 on_release:
                                     print("Small", self.active)
                             Check:
                                 group: 'carSize'
+                                id: size2
                                 on_release:
                                     print("Medium", self.active)
                             Check:
                                 group: 'carSize'
+                                id: size3
                                 on_release:
                                     print("Large", self.active)
                             Check:
                                 group: 'carSize'
+                                id: size4
                                 on_release:
                                     print("Sports", self.active)
                             Title4:
@@ -410,6 +429,14 @@ WindowManager:
                         hint_text_color: "white"
                         hint_bg_color: "red"
                         id: salaryResidual
+
+                CalculatorCategory:
+                    height: "250dp"
+                    size_hint: 1, None
+                    Button:
+                        on_release:
+                            root.calc_values(leaseBudget.value, annualDistance.value, term1.active, term2.active, term3.active, term4.active,
+                            size1.active, size2.active, size3.active, size4.active, salaryResidual.value)
 
 
 <Title1@Label>:
