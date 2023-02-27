@@ -131,7 +131,7 @@ class Calc(Screen):
         normal_lease_final = normal_net_annual_income - normal_less_post_tax_deduction
         print("Normal Final: " + str(normal_lease_final))
 
-        # TAX SAVINGS!
+        # TAX SAVINGS
         tax_savings = novated_lease_final - normal_lease_final
         print("Tax Savings: " + str(tax_savings))
 
