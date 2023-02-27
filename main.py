@@ -15,10 +15,24 @@ class Calc(Screen):
     def on_enter(self):
         pass
 
-    def calc_values(self, leaseBudget, annualDistance, term1, term2, term3, term4, size1, size2, size3, size4,
-                    salaryResidual):
+    def tax_calculate(self, taxable_income):
+        if 0 < taxable_income <= 18200:
+            return 0
+        elif 18200 < taxable_income <= 45000:
+            return 0.19 * (taxable_income - 18200)
+        elif 45000 < taxable_income <= 120000:
+            return 5092 + .325 * (taxable_income - 45000)
+        elif 120000 < taxable_income <= 180000:
+            return 29467 + .37 * (taxable_income - 120000)
+        elif taxable_income > 180000:
+            return 51667 + .45 * (taxable_income - 180000)
+        else:
+            print("ERROR - Taxable income not valid: [", taxable_income, "]")
+
+    def calc_values(self, carCost, annualDistance, term1, term2, term3, term4, size1, size2, size3, size4,
+                    preTaxIncome):
         term = 0
-        print('\n\n' + "Lease Budget: " + str(int(leaseBudget)))
+        print('\n\n' + "Car Cost: " + str(int(carCost)))
         print("Distance: " + str(annualDistance))
         for i in (f'12 months {term1}', f'24 months {term2}', f'36 months {term3}', f'48 months {term4}'):
             if "True" in i:
@@ -29,11 +43,12 @@ class Calc(Screen):
             if "True" in i:
                 print("Car Size: " + str(i.replace("True", "")))
                 size = i
-        print("Salary: " + str(salaryResidual))
+        print("Salary: " + str(preTaxIncome))
 
-        car_cost_GST = float(leaseBudget)
+        # SETTING PARAMETERS UP
+        car_cost_GST = float(carCost)
         business_percentage = 0
-        salary_income = float(salaryResidual)
+        salary_income = float(preTaxIncome)
         residual_value = 0.4688
         kms_travelled_per_year = float(annualDistance)
         lease_term = term
@@ -41,6 +56,7 @@ class Calc(Screen):
         standard_interest_rate = 0.03
         monthly_fee = 20
 
+        # NORMAL COSTS CALCULATIONS
         aP = -(car_cost_GST - (car_cost_GST * residual_value))
         ar = standard_interest_rate / 12
         an = (lease_term * 12) - 2
@@ -54,9 +70,8 @@ class Calc(Screen):
         normal_fuel = (((7.6 * (kms_travelled_per_year / 100)) * 1.5) * 1.2)
         normal_maintenance = 1500
 
-        normal_total = normal_financing + normal_insurance + normal_fees + normal_registration + normal_fuel + normal_maintenance
-
-        car_cost_GST_adjusted = car_cost_GST - (car_cost_GST/11)
+        # NOVATED COSTS CALCULATIONS
+        car_cost_GST_adjusted = car_cost_GST - (car_cost_GST / 11)
 
         bP = -(car_cost_GST_adjusted - (car_cost_GST_adjusted * residual_value))
         br = novated_interest_rate / 12
@@ -71,11 +86,54 @@ class Calc(Screen):
         novated_fuel = normal_fuel - normal_fuel / 11
         novated_maintenance = normal_maintenance - normal_maintenance / 11
 
+        # NOVATED TAX/INCOME CALCULATIONS
         novated_total = novated_financing + novated_insurance + novated_fees + novated_registration + novated_fuel + novated_maintenance
+        print("Novated Total: " + str(novated_total))
 
-        # less_pre_tax_deduction = novated_total + (less_post_tax_deduction/11 - less_post_tax_deduction)
-        # less_post_tax_deduction =
-        # taxable_income = salary_income - less_pre_tax_deduction
+        novated_less_post_tax_deduction = (car_cost_GST * .2) * (1 - business_percentage)
+        print("Novated Post Tax: " + str(novated_less_post_tax_deduction))
+
+        novated_less_pre_tax_deduction = novated_total + (
+                novated_less_post_tax_deduction / 11 - novated_less_post_tax_deduction)
+        print("Novated Pre Tax: " + str(novated_less_pre_tax_deduction))
+
+        novated_taxable_income = salary_income - novated_less_pre_tax_deduction
+        print("Novated Taxable Income: " + str(novated_taxable_income))
+
+        novated_less_tax = self.tax_calculate(novated_taxable_income)  # for some reason different to calculator
+        print("Novated Less Tax: " + str(novated_less_tax))
+
+        novated_net_annual_income = novated_taxable_income - novated_less_tax
+        print("Novated Net Annual Income: " + str(novated_net_annual_income))
+
+        novated_lease_final = novated_net_annual_income - novated_less_post_tax_deduction
+        print("Novated Final: " + str(novated_lease_final))
+
+        # NORMAL TAX/INCOME CALCULATIONS
+        normal_total = normal_financing + normal_insurance + normal_fees + normal_registration + normal_fuel + normal_maintenance
+        print("Normal Total: " + str(normal_total))
+
+        normal_less_post_tax_deduction = normal_total
+        print("Normal Post Tax: " + str(normal_less_post_tax_deduction))
+
+        normal_less_pre_tax_deduction = "-"
+        print("Normal Pre Tax: " + str(normal_less_pre_tax_deduction))
+
+        normal_taxable_income = salary_income
+        print("Normal Taxable Income: " + str(normal_taxable_income))
+
+        normal_less_tax = self.tax_calculate(normal_taxable_income)  # for some reason different to calculator
+        print("Normal Less Tax: " + str(normal_less_tax))
+
+        normal_net_annual_income = normal_taxable_income - normal_less_tax
+        print("Normal Net Annual Income: " + str(normal_net_annual_income))
+
+        normal_lease_final = normal_net_annual_income - normal_less_post_tax_deduction
+        print("Normal Final: " + str(normal_lease_final))
+
+        # TAX SAVINGS!
+        tax_savings = novated_lease_final - normal_lease_final
+        print("Tax Savings: " + str(tax_savings))
 
 
 class Login(Screen):

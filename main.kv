@@ -310,20 +310,20 @@ WindowManager:
                     height: "200dp"
                     spacing: "40dp"
 
-                    CalculatorCategory: # Budget
+                    CalculatorCategory: # Car Coxt
                         height: "250dp"
                         Title2:
-                            text: "Budget (monthly cost)"
+                            text: "Car Cost (inc GST)"
                         MDSlider:
                             hint: False
                             color: 229/255,60/255,40/255,1
                             min: 0
                             max: 50000
                             step: 500
-                            id: leaseBudget
+                            id: carCost
                         Title4:
                             font_size: "20dp"
-                            text: "$" + str(int(leaseBudget.value))
+                            text: "$" + str(int(carCost.value))
 
                     CalculatorCategory: # Annual Distance Travelled
                         height: "250dp"
@@ -418,11 +418,11 @@ WindowManager:
                             Title4:
                                 text: "Sports"
 
-                CalculatorCategory: # Salary and Residual
+                CalculatorCategory: # Pre-tax income
                     height: "250dp"
                     size_hint: 1, None
                     Title2:
-                        text: "Salary and Residual"
+                        text: "Pre-tax income"
                     MDSlider:
                         hint: True
                         color: 229/255,60/255,40/255,1
@@ -431,18 +431,18 @@ WindowManager:
                         min: 0
                         max: 300000
                         step: 5000
-                        id: salaryResidual
+                        id: preTaxIncome
                     Title4:
                         font_size: "20dp"
-                        text: "$" + str(int(salaryResidual.value))
+                        text: "$" + str(int(preTaxIncome.value))
 
                 CalculatorCategory:
                     height: "250dp"
                     size_hint: 1, None
                     Button:
                         on_release:
-                            root.calc_values(leaseBudget.value, annualDistance.value, term1.active, term2.active, term3.active, term4.active,
-                            size1.active, size2.active, size3.active, size4.active, salaryResidual.value)
+                            root.calc_values(carCost.value, annualDistance.value, term1.active, term2.active, term3.active, term4.active,
+                            size1.active, size2.active, size3.active, size4.active, preTaxIncome.value)
 
 
 <Title1@Label>:
