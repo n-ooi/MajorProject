@@ -107,7 +107,7 @@ class Calc(Screen):
         novated_insurance = normal_insurance - normal_insurance / 11
         novated_fees = 12 * monthly_fee
         novated_registration = normal_registration
-        novated_fuel = normal_fuel - normal_fuel / 11
+        novated_fuel = (normal_fuel - normal_fuel / 11)
         novated_maintenance = normal_maintenance - normal_maintenance / 11
 
         print("Novated Financing: " + str(novated_financing))
@@ -160,18 +160,20 @@ class Calc(Screen):
         normal_lease_final = normal_net_annual_income - normal_less_post_tax_deduction
         print("\033[1;31;50m" + "Normal Final: " + str(normal_lease_final) + "\033[0m")
 
-        # TAX SAVINGS
+        # SAVINGS
         tax_savings = novated_lease_final - normal_lease_final
         print("\033[1;33;50m" + "Tax Savings: " + str(tax_savings) + "\033[0m")
+
+        money_savings = tax_savings + normal_total - novated_total
+        print("\033[1;33;50m" + "Money Savings: " + str(money_savings) + "\033[0m")
+
+        window = MDDialog(text="Tax Savings: \n$" + str(round(tax_savings, 2)), )
+        window.open()
 
 
 class Login(Screen):
     def on_enter(self):
         pass
-
-    def loginFail(self):
-        window = MDDialog(text="Username or Password are incorrect.", )
-        window.open()
 
     def login_validation(self, LoginUsername, LoginPassword, root):
         check = pd.read_csv('login-details.csv')
@@ -179,7 +181,7 @@ class Login(Screen):
         print(LoginPassword)
         if LoginUsername not in check['Username'].unique():
             print("Username not found")
-            self.loginFail()
+            MDDialog(text="Username or Password are incorrect.", ).open()
             pass  # deny access (Username not registered)
         else:
             user_info = check[['Username', 'Password']][check['Username'] == LoginUsername]
@@ -191,40 +193,27 @@ class Login(Screen):
                 print("Password Correct")
             else:
                 print("Password Incorrect")
-                self.loginFail()
+                MDDialog(text="Username or Password are incorrect.", ).open()
 
 
 class SignUp(Screen):
     def on_enter(self):
-        self.clearValues()
-
-    def clearValues(self):
         pass
-
-    def passwordMismatch(self):
-        window = MDDialog(text="Passwords don't match.", )
-        window.open()
-
-    def missingFields(self):
-        window = MDDialog(text="Some fields are missing or incorrect.", )
-        window.open()
 
     def signupbtn(self, SignUpUsername, SignUpPassword1, SignUpPassword2, root):
         # creating a DataFrame of the info
         user = pd.DataFrame([[SignUpUsername, SignUpPassword1]],
                             columns=['Username', 'Password'])
         if SignUpPassword2 != SignUpPassword1:
-            self.passwordMismatch()
+            MDDialog(text="Passwords don't match.", ).open()
         else:
             if SignUpUsername and SignUpPassword1:
                 if SignUpUsername not in users['Username'].unique():
                     # if Username does not exist already then append to the csv file
                     MDApp.get_running_app().switch_screen("login")  # to change current screen to log in the user now
                     user.to_csv('login-details.csv', mode='a', header=False, index=False)
-                    # self.SignUpUsername.text = ""
-                    # self.SignUpPassword1.text = ""
             else:
-                self.missingFields()
+                MDDialog(text="Some fields are missing or incorrect.", ).open()
 
 
 class WindowManager(ScreenManager):  # this class defines the ScreenManager
