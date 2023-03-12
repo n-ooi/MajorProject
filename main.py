@@ -9,6 +9,9 @@ from kivy.core.window import Window
 from kivymd.uix.dialog import MDDialog
 from kivymd.uix.button import MDFlatButton
 import numpy_financial as np
+import json
+
+current_user = ""
 
 
 class Calc(Screen):
@@ -41,13 +44,114 @@ class Calc(Screen):
         elif 48000 < taxable_income <= 90000:
             tax = tax - 1080
         elif 90000 < taxable_income <= 126000:
-            tax = tax - 1080 + .03*(taxable_income - 90000)
+            tax = tax - 1080 + .03 * (taxable_income - 90000)
 
         # return TAX values
         return tax
 
+    def edit_json(self, cost, distance, term, size, salary):
+        filename = "user_data.json"
+        print("json editing...")
+
+        new_user = True
+        index_to_change = 0
+        loops = 0
+
+
+
+        def view_data():
+            with open(filename, "r") as f:
+                temp = json.load(f)
+                i = 0
+                for entry in temp:
+                    username = entry["username"]
+                    car_cost = entry["cost"]
+                    distance_travelled = entry["distance"]
+                    lease_term = entry["term"]
+                    car_size = entry["size"]
+                    salary_income = entry["income"]
+
+                    print(f"Index Number {i}")
+                    print(f"Username: {username}")
+                    print(f"Cost: {car_cost}")
+                    print(f"Distance: {distance_travelled}")
+                    print(f"Term: {lease_term}")
+                    print(f"Size: {car_size}")
+                    print(f"Salary: {salary_income}")
+                    print("\n\n")
+                    i = i + 1
+
+        def delete_data():
+            view_data()
+            new_data = []
+            with open(filename, "r") as f:
+                temp = json.load(f)
+                data_length = len(temp) - 1
+            print("Which index would you like to delete?")
+            delete_option = input(f"Select number from 0 - {data_length}")
+            i = 0
+            for entry in temp:
+                if i == int(delete_option):
+                    pass
+                    i = i + 1
+                else:
+                    new_data.append(entry)
+                    i = i + 1
+            with open(filename, "w") as f:
+                json.dump(new_data, f, indent=4)
+
+        def edit_data():
+            view_data()
+            new_data = []
+            with open(filename, "r") as f:
+                temp = json.load(f)
+                data_length = len(temp) - 1
+            edit_option = index_to_change
+            i = 0
+            for entry in temp:
+                if i == int(edit_option):
+                    username = current_user
+                    car_cost = cost
+                    distance_travelled = distance
+                    lease_term = term
+                    car_size = size
+                    salary_income = salary
+                    new_data.append(
+                        {"username": username, "cost": car_cost, "distance": distance_travelled, "term": lease_term,
+                         "size": car_size, "salary": salary_income})
+                    i = i + 1
+                else:
+                    new_data.append(entry)
+                    i = i + 1
+            with open(filename, "w") as f:
+                json.dump(new_data, f, indent=4)
+
+        def add_data():
+            item_data = {}
+            with open(filename, "r") as f:
+                temp = json.load(f)
+            item_data["username"] = current_user
+            item_data["cost"] = cost
+            item_data["distance"] = distance
+            item_data["term"] = term
+            item_data["size"] = size
+            item_data["salary"] = salary
+            temp.append(item_data)
+            with open(filename, "w") as f:
+                json.dump(temp, f, indent=4)
+
+        if new_user == True and loops == 0:
+            add_data()
+            loops = loops + 1
+            with open(filename, "r") as f:
+                data = json.load(f)
+                index_to_change = len(data) - 1
+        else:
+            edit_data()
+
     def calc_values(self, carCost, annualDistance, term1, term2, term3, term4, size1, size2, size3, size4,
                     preTaxIncome):
+
         term = 0
         print('\n\n' + "Car Cost: " + str(int(carCost)))
         print("Distance: " + str(annualDistance))
@@ -63,8 +167,9 @@ class Calc(Screen):
         print("Salary: " + str(preTaxIncome))
 
         # SETTING PARAMETERS UP
+        car_size = size
         car_cost_GST = float(carCost)
-        business_percentage = 0   # if there is time make this editable
+        business_percentage = 0  # if there is time make this editable
         salary_income = float(preTaxIncome)
         residual_value = 0.4688  # if there is time make this editable
         kms_travelled_per_year = float(annualDistance)
@@ -72,6 +177,8 @@ class Calc(Screen):
         novated_interest_rate = 0.075  # if there is time make this editable
         standard_interest_rate = 0.03  # if there is time make this editable
         monthly_fee = 20  # if there is time make this editable
+
+        self.edit_json(car_cost_GST, kms_travelled_per_year, lease_term, car_size, salary_income)
 
         # NORMAL COSTS CALCULATIONS
         aP = -(car_cost_GST - (car_cost_GST * residual_value))
@@ -86,7 +193,7 @@ class Calc(Screen):
         normal_registration = 800
         normal_fuel = (((7.6 * (kms_travelled_per_year / 100)) * 1.5) * 1.2)
         normal_maintenance = 1500
-        
+
         print("Normal Financing: " + str(normal_financing))
         print("Normal Insurance: " + str(normal_insurance))
         print("Normal Fuel: " + str(normal_fuel))
@@ -95,7 +202,7 @@ class Calc(Screen):
         # NOVATED COSTS CALCULATIONS
         car_cost_GST_adjusted = car_cost_GST - (car_cost_GST / 11)
         if car_cost_GST > 69152:
-            car_cost_GST_adjusted = car_cost_GST - (69152*.1)
+            car_cost_GST_adjusted = car_cost_GST - (69152 * .1)
 
         bP = -(car_cost_GST_adjusted - (car_cost_GST_adjusted * residual_value))
         br = novated_interest_rate / 12
@@ -191,6 +298,8 @@ class Login(Screen):
             if LoginPassword == user_password:
                 MDApp.get_running_app().switch_screen("Calc")
                 print("Password Correct")
+                global current_user
+                current_user = LoginUsername
             else:
                 print("Password Incorrect")
                 MDDialog(text="Username or Password are incorrect.", ).open()
@@ -212,6 +321,8 @@ class SignUp(Screen):
                     # if Username does not exist already then append to the csv file
                     MDApp.get_running_app().switch_screen("login")  # to change current screen to log in the user now
                     user.to_csv('login-details.csv', mode='a', header=False, index=False)
+                else:
+                    MDDialog(text="Username Taken.", ).open()
             else:
                 MDDialog(text="Some fields are missing or incorrect.", ).open()
 

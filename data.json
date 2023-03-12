@@ -1,0 +1,20 @@
+[
+    {
+        "username": "test-user1",
+        "stat1": 1,
+        "stat2": 2,
+        "stat3": 3
+    },
+    {
+        "username": "test-user2",
+        "stat1": 1,
+        "stat2": 2,
+        "stat3": 3
+    },
+    {
+        "username": "test-user4",
+        "stat1": "600",
+        "stat2": "11",
+        "stat3": "33"
+    }
+]
