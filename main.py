@@ -16,7 +16,59 @@ current_user = ""
 
 class Calc(Screen):
     def on_enter(self):
-        pass
+
+        filename = "user_data.json"
+        with open(filename, "r") as f:
+            temp = json.load(f)
+            i = 0
+            new = True
+            for entry in temp:
+                username = entry["username"]
+                car_cost = entry["cost"]
+                distance_travelled = entry["distance"]
+                lease_term = entry["term"]
+                car_size = entry["size"]
+                salary_income = entry["salary"]
+
+
+                if username == current_user:
+
+                    new = False
+
+                    print(f"Index Number {i}")
+                    print(f"Username: {username}")
+                    print(f"Cost: {car_cost}")
+                    print(f"Distance: {distance_travelled}")
+                    print(f"Term: {lease_term}")
+                    print(f"Size: {car_size}")
+                    print(f"Salary: {salary_income}")
+
+                    self.ids.carCost.value = car_cost
+                    self.ids.annualDistance.value = distance_travelled
+                    self.ids.preTaxIncome.value = salary_income
+
+                    if lease_term == 1:
+                        self.ids.term1.active = True
+                    elif lease_term == 2:
+                        self.ids.term2.active = True
+                    elif lease_term == 3:
+                        self.ids.term3.active = True
+                    elif lease_term == 4:
+                        self.ids.term4.active = True
+
+                    if car_size == "small True":
+                        self.ids.size1.active = True
+                    elif car_size == "medium True":
+                        self.ids.size2.active = True
+                    elif car_size == "large True":
+                        self.ids.size3.active = True
+                    elif car_size == "sports True":
+                        self.ids.size4.active = True
+
+                i = i + 1
+
+
+
 
     def tax_calculate(self, taxable_income):
         tax = 0
@@ -54,10 +106,6 @@ class Calc(Screen):
         print("json editing...")
 
         new_user = True
-        index_to_change = 0
-        loops = 0
-
-
 
         def view_data():
             with open(filename, "r") as f:
@@ -69,7 +117,7 @@ class Calc(Screen):
                     distance_travelled = entry["distance"]
                     lease_term = entry["term"]
                     car_size = entry["size"]
-                    salary_income = entry["income"]
+                    salary_income = entry["salary"]
 
                     print(f"Index Number {i}")
                     print(f"Username: {username}")
@@ -81,48 +129,28 @@ class Calc(Screen):
                     print("\n\n")
                     i = i + 1
 
-        def delete_data():
-            view_data()
-            new_data = []
-            with open(filename, "r") as f:
-                temp = json.load(f)
-                data_length = len(temp) - 1
-            print("Which index would you like to delete?")
-            delete_option = input(f"Select number from 0 - {data_length}")
-            i = 0
-            for entry in temp:
-                if i == int(delete_option):
-                    pass
-                    i = i + 1
-                else:
-                    new_data.append(entry)
-                    i = i + 1
-            with open(filename, "w") as f:
-                json.dump(new_data, f, indent=4)
-
         def edit_data():
-            view_data()
             new_data = []
             with open(filename, "r") as f:
                 temp = json.load(f)
-                data_length = len(temp) - 1
-            edit_option = index_to_change
+                i = 0
+                edit_option = 0
+                for entry in temp:
+                    if current_user == entry["username"]:
+                        edit_option = i
+                    i = i + 1
             i = 0
+
             for entry in temp:
                 if i == int(edit_option):
-                    username = current_user
-                    car_cost = cost
-                    distance_travelled = distance
-                    lease_term = term
-                    car_size = size
-                    salary_income = salary
-                    new_data.append(
-                        {"username": username, "cost": car_cost, "distance": distance_travelled, "term": lease_term,
-                         "size": car_size, "salary": salary_income})
+                    new_data.append({"username": current_user, "cost": cost, "distance": distance, "term": term, "size": size, "salary": salary})
                     i = i + 1
+                    "doing stuff"
                 else:
                     new_data.append(entry)
                     i = i + 1
+
+            print(new_data)
             with open(filename, "w") as f:
                 json.dump(new_data, f, indent=4)
 
@@ -140,13 +168,18 @@ class Calc(Screen):
             with open(filename, "w") as f:
                 json.dump(temp, f, indent=4)
 
-        if new_user == True and loops == 0:
+        filename = "user_data.json"
+        with open(filename, "r") as f:
+            temp = json.load(f)
+            for entry in temp:
+                username = entry["username"]
+                if username == current_user:
+                    new_user = False
+
+        if new_user:
             add_data()
-            loops = loops + 1
-            with open(filename, "r") as f:
-                data = json.load(f)
-                index_to_change = len(data) - 1
         else:
+            print("NOT NEW USER!!! EDITING EXISTING DATA")
             edit_data()
 
     def calc_values(self, carCost, annualDistance, term1, term2, term3, term4, size1, size2, size3, size4,

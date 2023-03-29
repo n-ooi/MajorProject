@@ -8,51 +8,27 @@
         "salary": 285000.0
     },
     {
-        "username": "placeholder",
-        "cost": 134000.0,
-        "distance": 30000.0,
-        "term": 1,
-        "size": "medium True",
-        "salary": 250000.0
+        "username": ".",
+        "cost": 0.0,
+        "distance": 36000.0,
+        "term": 3,
+        "size": "large True",
+        "salary": 355000.0
     },
     {
-        "username": "placeholder",
-        "cost": 134000.0,
-        "distance": 30000.0,
-        "term": 1,
-        "size": "medium True",
-        "salary": 250000.0
-    },
-    {
-        "username": "placeholder",
-        "cost": 134000.0,
-        "distance": 30000.0,
-        "term": 1,
-        "size": "medium True",
-        "salary": 250000.0
-    },
-    {
-        "username": "",
-        "cost": 123000.0,
-        "distance": 16000.0,
+        "username": "1111",
+        "cost": 109000.0,
+        "distance": 13000.0,
         "term": 4,
-        "size": "medium True",
+        "size": "sports True",
         "salary": 230000.0
     },
     {
-        "username": "",
-        "cost": 161000.0,
-        "distance": 36500.0,
+        "username": "x",
+        "cost": 0.0,
+        "distance": 11500.0,
         "term": 3,
         "size": "small True",
-        "salary": 315000.0
-    },
-    {
-        "username": "testuser111",
-        "cost": 148000.0,
-        "distance": 15500.0,
-        "term": 3,
-        "size": "small True",
-        "salary": 315000.0
+        "salary": 210000.0
     }
 ]
