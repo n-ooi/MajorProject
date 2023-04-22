@@ -27,4 +27,5 @@ def encrypt(file_name):
         encrypted_file.write(encrypted)
 
 
-encrypt(file_name)
+with open('user_data.json', 'r') as f:
+    print(f.read()[0])

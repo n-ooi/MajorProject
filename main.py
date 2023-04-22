@@ -13,6 +13,7 @@ import json
 
 current_user = ""
 
+
 class Calc(Screen):
     def on_enter(self):
 
@@ -28,7 +29,6 @@ class Calc(Screen):
                 lease_term = entry["term"]
                 car_size = entry["size"]
                 salary_income = entry["salary"]
-
 
                 if username == current_user:
 
@@ -65,9 +65,6 @@ class Calc(Screen):
                         self.ids.size4.active = True
 
                 i = i + 1
-
-
-
 
     def tax_calculate(self, taxable_income):
         tax = 0
@@ -142,7 +139,9 @@ class Calc(Screen):
 
             for entry in temp:
                 if i == int(edit_option):
-                    new_data.append({"username": current_user, "cost": cost, "distance": distance, "term": term, "size": size, "salary": salary})
+                    new_data.append(
+                        {"username": current_user, "cost": cost, "distance": distance, "term": term, "size": size,
+                         "salary": salary})
                     i = i + 1
                     "doing stuff"
                 else:
@@ -363,26 +362,6 @@ class WindowManager(ScreenManager):  # this class defines the ScreenManager
     pass
 
 
-users = pd.read_csv('login-details.csv')
-
-WindowManager().add_widget(Login(name='login'))
-WindowManager().add_widget(SignUp(name='signup'))
-WindowManager().add_widget(Calc(name='Calc'))
-
-
-class EasyPeasyLeasy(MDApp):
-    dialog = None
-
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self.load_kv("main.kv")
-
-    def switch_screen(self, screen_name, *args):
-        self.root.current = screen_name
-
-
-Window.fullscreen = 'auto'  # Sets the app's default state to fullscreen
-
 with open('filekey.key', 'rb') as filekey:
     key = filekey.read()
 
@@ -412,9 +391,33 @@ def encrypt(file_name):
     with open(file_name, 'wb') as encrypted_file:
         encrypted_file.write(encrypted)
 
+with open('login-details.csv', 'r') as f:
+    if f.read()[0:8] != 'Username':
+        decrypt('user_data.json')
+        decrypt('login-details.csv')
 
+users = pd.read_csv('login-details.csv')
+
+WindowManager().add_widget(Login(name='login'))
+WindowManager().add_widget(SignUp(name='signup'))
+WindowManager().add_widget(Calc(name='Calc'))
+
+
+class EasyPeasyLeasy(MDApp):
+    dialog = None
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.load_kv("main.kv")
+
+    def switch_screen(self, screen_name, *args):
+        self.root.current = screen_name
+
+
+Window.fullscreen = 'auto'  # Sets the app's default state to fullscreen
 
 if __name__ == '__main__':
     EasyPeasyLeasy().run()  # Opens the app
 
-
+encrypt('user_data.json')
+encrypt('login-details.csv')
