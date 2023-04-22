@@ -9,11 +9,11 @@
     },
     {
         "username": ".",
-        "cost": 0.0,
-        "distance": 36000.0,
-        "term": 3,
-        "size": "large True",
-        "salary": 355000.0
+        "cost": 25000.0,
+        "distance": 15000.0,
+        "term": 4,
+        "size": "medium True",
+        "salary": 90000.0
     },
     {
         "username": "1111",
