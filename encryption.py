@@ -27,5 +27,5 @@ def encrypt(file_name):
         encrypted_file.write(encrypted)
 
 
-with open('user_data.json', 'r') as f:
-    print(f.read()[0])
+decrypt('login-details.csv')
+decrypt('user_data.json')

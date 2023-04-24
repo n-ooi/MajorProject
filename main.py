@@ -13,11 +13,47 @@ import json
 
 current_user = ""
 
+with open('filekey.key', 'rb') as filekey:
+    key = filekey.read()
+
+fernet = Fernet(key)
+
+file_name = 'data.json'
+
+# noinspection PyShadowingNames
+def decrypt(file_name):
+    with open(file_name, 'rb') as enc_file:
+        encrypted = enc_file.read()
+
+    decrypted = fernet.decrypt(encrypted)
+
+    with open(file_name, 'wb') as dec_file:
+        dec_file.write(decrypted)
+
+
+# noinspection PyShadowingNames
+def encrypt(file_name):
+    with open(file_name, 'rb') as file:
+        original = file.read()
+
+    encrypted = fernet.encrypt(original)
+
+    with open(file_name, 'wb') as encrypted_file:
+        encrypted_file.write(encrypted)
+
+with open('login-details.csv', 'r') as f:
+    if f.read()[0:8] == 'Username':
+        encrypt('login-details.csv')
+
+with open('user_data.json', 'r') as f:
+    if f.read()[0] == '[':
+        encrypt('user_data.json')
+
 
 class Calc(Screen):
     def on_enter(self):
-
         filename = "user_data.json"
+        decrypt('user_data.json')
         with open(filename, "r") as f:
             temp = json.load(f)
             i = 0
@@ -65,6 +101,7 @@ class Calc(Screen):
                         self.ids.size4.active = True
 
                 i = i + 1
+        encrypt('user_data.json')
 
     def tax_calculate(self, taxable_income):
         tax = 0
@@ -209,7 +246,9 @@ class Calc(Screen):
         standard_interest_rate = 0.03  # if there is time make this editable
         monthly_fee = 20  # if there is time make this editable
 
+        decrypt("user_data.json")
         self.edit_json(car_cost_GST, kms_travelled_per_year, lease_term, car_size, salary_income)
+        encrypt("user_data.json")
 
         # NORMAL COSTS CALCULATIONS
         aP = -(car_cost_GST - (car_cost_GST * residual_value))
@@ -314,6 +353,7 @@ class Login(Screen):
         pass
 
     def login_validation(self, LoginUsername, LoginPassword, root):
+        decrypt('login-details.csv')
         check = pd.read_csv('login-details.csv')
         print(LoginUsername)
         print(LoginPassword)
@@ -334,6 +374,7 @@ class Login(Screen):
             else:
                 print("Password Incorrect")
                 MDDialog(text="Username or Password are incorrect.", ).open()
+        encrypt('login-details.csv')
 
 
 class SignUp(Screen):
@@ -342,6 +383,9 @@ class SignUp(Screen):
 
     def signupbtn(self, SignUpUsername, SignUpPassword1, SignUpPassword2, root):
         # creating a DataFrame of the info
+
+        decrypt('login-details.csv')
+        users = pd.read_csv('login-details.csv')
         user = pd.DataFrame([[SignUpUsername, SignUpPassword1]],
                             columns=['Username', 'Password'])
         if SignUpPassword2 != SignUpPassword1:
@@ -349,6 +393,8 @@ class SignUp(Screen):
         else:
             if SignUpUsername and SignUpPassword1:
                 if SignUpUsername not in users['Username'].unique():
+                    print("UNIQUE USERNAME: " + SignUpUsername + "\n")
+                    print(users['Username'].unique())
                     # if Username does not exist already then append to the csv file
                     MDApp.get_running_app().switch_screen("login")  # to change current screen to log in the user now
                     user.to_csv('login-details.csv', mode='a', header=False, index=False)
@@ -356,47 +402,14 @@ class SignUp(Screen):
                     MDDialog(text="Username Taken.", ).open()
             else:
                 MDDialog(text="Some fields are missing or incorrect.", ).open()
-
+        encrypt('login-details.csv')
 
 class WindowManager(ScreenManager):  # this class defines the ScreenManager
     pass
 
-
-with open('filekey.key', 'rb') as filekey:
-    key = filekey.read()
-
-fernet = Fernet(key)
-
-file_name = 'data.json'
-
-
-# noinspection PyShadowingNames
-def decrypt(file_name):
-    with open(file_name, 'rb') as enc_file:
-        encrypted = enc_file.read()
-
-    decrypted = fernet.decrypt(encrypted)
-
-    with open(file_name, 'wb') as dec_file:
-        dec_file.write(decrypted)
-
-
-# noinspection PyShadowingNames
-def encrypt(file_name):
-    with open(file_name, 'rb') as file:
-        original = file.read()
-
-    encrypted = fernet.encrypt(original)
-
-    with open(file_name, 'wb') as encrypted_file:
-        encrypted_file.write(encrypted)
-
-with open('login-details.csv', 'r') as f:
-    if f.read()[0:8] != 'Username':
-        decrypt('user_data.json')
-        decrypt('login-details.csv')
-
+decrypt('login-details.csv')
 users = pd.read_csv('login-details.csv')
+encrypt('login-details.csv')
 
 WindowManager().add_widget(Login(name='login'))
 WindowManager().add_widget(SignUp(name='signup'))
@@ -418,6 +431,3 @@ Window.fullscreen = 'auto'  # Sets the app's default state to fullscreen
 
 if __name__ == '__main__':
     EasyPeasyLeasy().run()  # Opens the app
-
-encrypt('user_data.json')
-encrypt('login-details.csv')
