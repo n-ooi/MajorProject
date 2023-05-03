@@ -436,10 +436,76 @@ WindowManager:
                         font_size: "20dp"
                         text: "$" + str(int(preTaxIncome.value))
 
+                BoxLayout:
+                    size_hint: 1,None
+                    height: "250dp"
+                    spacing: "40dp"
+                    CalculatorCategory: # Incidental
+                        height: "250dp"
+                        size_hint: 1, None
+                        Title2:
+                            text: "Insurance"
+                        Image:
+                            source: "incidentals/insurance.png"
+                        Check:
+                            id: insurance
+                            on_release:
+                                print("insurance", self.active)
+
+                    CalculatorCategory: # Incidental
+                        height: "250dp"
+                        size_hint: 1, None
+                        Title2:
+                            text: "Roadside Assist"
+                        Image:
+                            source: "incidentals/roadside.webp"
+                        Check:
+                            id: roadside_assist
+                            on_release:
+                                print("roadside_assist", self.active)
+
+                    CalculatorCategory: # Incidental
+                        height: "250dp"
+                        size_hint: 1, None
+                        Title2:
+                            text: "Cleaning / Car Wash"
+                        Image:
+                            source: "incidentals/cleaning.png"
+                        Check:
+                            id: cleaning
+                            on_release:
+                                print("cleaning", self.active)
+
+                    CalculatorCategory: # Incidental
+                        height: "250dp"
+                        size_hint: 1, None
+                        Title2:
+                            text: "Servicing"
+                        Image:
+                            source: "incidentals/servicing.png"
+                        Check:
+                            id: servicing
+                            on_release:
+                                print("servicing", self.active)
+
                 CalculatorCategory:
+                    md_bg_color: 229/255,60/255,40/255,1
                     height: "250dp"
                     size_hint: 1, None
                     Button:
+                        text: "CALCULATE"
+                        font_name: "font.otf"
+                        bold: True
+                        font_size: "50dp"
+                        background_color: (0,0,0,0)
+                        background_normal: ""
+                        canvas.before:
+                            Color:
+                                rgba: 1,1,1,.2
+                            RoundedRectangle:
+                                size: self.size
+                                pos: self.pos
+                                radius: [50]
                         on_release:
                             root.calc_values(carCost.value, annualDistance.value, term1.active, term2.active, term3.active, term4.active,
                             size1.active, size2.active, size3.active, size4.active, preTaxIncome.value)

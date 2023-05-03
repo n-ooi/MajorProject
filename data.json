@@ -1,1 +1,26 @@
-gAAAAABkQz5udMuJidjT-cNPhoxerEFQ7ifVlvZtI1CUNhVtnuhgxlxQvuSWQEt6qJV6CFUUdxBHry9vQegmBCffzjYIg0lyBsCLN4O1fVTbbFljYUQNWgucH0JDj20d99H90daBfXd9DFWE1sb3z8qetTZb6-7Xk07mus1Eec31FOL3ECpreLtUkw9ccuorOjfkK42kzZquvkXcmYQHk0cT5Ise5AgrDDGW1aQm-SsPhNT0Z9bQLkBPqonvbU1Holn0gYi2uMIApzn4e51i8joDD6aNBsz-bWTgHPUqXa6gAF7mvfleFdXejh9wHO5Phi2CblSuy7KLAta5K9r6aJIsMByK5BRTy69Gt4WNqHz0hHRQnpVcKxAfVootWjA3FeuQI4sgcrwIP250LK8KCppSGPidU37Vx7CPTF7FiC6QRMBsU9CRmEvsqj7gjdvaM1fjbsRcp2e-BQj4I2o5IXBiJgOVTuggb1uc0PK0Lh0urNxR8i3p9xslUeDhOdzLYA68pZX8_K9RUt1pL9_RJ9j6T_izUTBrpzxsCgkV9Rum18ZLH_7HmBs4q9xoESVtlvT3_FrkjwBN0JhaMp07HsxHbfgORFlpS1CK57zne1g3H8VBHciHBdlR5tmXF2eO2fIiMHghREbYxyacfPZH3dg4MHrC1ECwLo1J8I3FWj9-k1qRjWw_0wFfIDDmzhCb3PWWGN8kp1g31aa48gPQ4xuQKjyHGUTuujZOHOst_RLdyHWGau8aaO8yXteQYu_O6Pk8pPiQ6VI5tSGJbmsGDddvWvSopHqqb6R-ynpOokve4T7_IWdkv3Ti1fuVk_Dz2O8ddmboJGVMgGa_blJcpyqN8oa3uQQBi7yWo3bkd5gkPZihlA6HgU6Gzvr0IG1OxLwDt7PqJ9ZJpddEaeRQfKPCq7jEnQvMbfmVVDeKhyy2xhmsUL5g180KAjxsPGDHyVd36Tvg1RKUQvU1yOR278psPQ2YKpfpiQ==
+[
+    {
+        "username": "test-user1",
+        "stat1": 1,
+        "stat2": 2,
+        "stat3": 3
+    },
+    {
+        "username": "test-user2",
+        "stat1": 1,
+        "stat2": 2,
+        "stat3": 3
+    },
+    {
+        "username": "test-user4",
+        "stat1": "600",
+        "stat2": "11",
+        "stat3": "33"
+    },
+    {
+        "username": "nooi23",
+        "stat1": "1",
+        "stat2": "3",
+        "stat3": "6"
+    }
+]

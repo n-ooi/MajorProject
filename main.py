@@ -20,6 +20,7 @@ fernet = Fernet(key)
 
 file_name = 'data.json'
 
+
 # noinspection PyShadowingNames
 def decrypt(file_name):
     with open(file_name, 'rb') as enc_file:
@@ -40,6 +41,7 @@ def encrypt(file_name):
 
     with open(file_name, 'wb') as encrypted_file:
         encrypted_file.write(encrypted)
+
 
 with open('login-details.csv', 'r') as f:
     if f.read()[0:8] == 'Username':
@@ -344,7 +346,11 @@ class Calc(Screen):
         money_savings = tax_savings + normal_total - novated_total
         print("\033[1;33;50m" + "Money Savings: " + str(money_savings) + "\033[0m")
 
-        window = MDDialog(text="Tax Savings: \n$" + str(round(tax_savings, 2)), )
+        window = MDDialog(text="Tax Savings: $" + str(round(tax_savings, 2)) +
+                               "\nYearly Payment: $" + str(round(novated_total, 2)) +
+                               "\nMonthly Payment: $" + str(round(novated_total / 12, 2))
+
+                          )
         window.open()
 
 
@@ -404,8 +410,10 @@ class SignUp(Screen):
                 MDDialog(text="Some fields are missing or incorrect.", ).open()
         encrypt('login-details.csv')
 
+
 class WindowManager(ScreenManager):  # this class defines the ScreenManager
     pass
+
 
 decrypt('login-details.csv')
 users = pd.read_csv('login-details.csv')
