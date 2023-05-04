@@ -27,4 +27,5 @@ def encrypt(file_name):
         encrypted_file.write(encrypted)
 
 
-encrypt('login-details.csv')
+decrypt('login-details.csv')
+decrypt('user_data.json')

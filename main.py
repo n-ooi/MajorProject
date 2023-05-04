@@ -67,6 +67,10 @@ class Calc(Screen):
                 lease_term = entry["term"]
                 car_size = entry["size"]
                 salary_income = entry["salary"]
+                inc1 = entry["insurance"]
+                inc2 = entry["roadside"]
+                inc3 = entry["cleaning"]
+                inc4 = entry["servicing"]
 
                 if username == current_user:
 
@@ -102,6 +106,16 @@ class Calc(Screen):
                     elif car_size == "sports True":
                         self.ids.size4.active = True
 
+                    print(inc1, inc2, inc3, inc4)
+                    if inc1:
+                        self.ids.inc1.active = True
+                    if inc2:
+                        self.ids.inc2.active = True
+                    if inc3:
+                        self.ids.inc4.active = True
+                    if inc4:
+                        self.ids.inc4.active = True
+
                 i = i + 1
         encrypt('user_data.json')
 
@@ -136,7 +150,7 @@ class Calc(Screen):
         # return TAX values
         return tax
 
-    def edit_json(self, cost, distance, term, size, salary):
+    def edit_json(self, cost, distance, term, size, salary, inc1, inc2, inc3, inc4):
         filename = "user_data.json"
         print("json editing...")
 
@@ -153,6 +167,10 @@ class Calc(Screen):
                     lease_term = entry["term"]
                     car_size = entry["size"]
                     salary_income = entry["salary"]
+                    insurance = entry["insurance"]
+                    roadside = entry["roadside"]
+                    cleaning = entry["cleaning"]
+                    servicing = entry["servicing"]
 
                     print(f"Index Number {i}")
                     print(f"Username: {username}")
@@ -180,7 +198,7 @@ class Calc(Screen):
                 if i == int(edit_option):
                     new_data.append(
                         {"username": current_user, "cost": cost, "distance": distance, "term": term, "size": size,
-                         "salary": salary})
+                         "salary": salary, "insurance": inc1, "roadside": inc2, "cleaning": inc3, "servicing": inc4})
                     i = i + 1
                     "doing stuff"
                 else:
@@ -201,6 +219,10 @@ class Calc(Screen):
             item_data["term"] = term
             item_data["size"] = size
             item_data["salary"] = salary
+            item_data["insurance"] = inc1
+            item_data["roadside"] = inc2
+            item_data["cleaning"] = inc3
+            item_data["servicing"] = inc4
             temp.append(item_data)
             with open(filename, "w") as f:
                 json.dump(temp, f, indent=4)
@@ -220,7 +242,7 @@ class Calc(Screen):
             edit_data()
 
     def calc_values(self, carCost, annualDistance, term1, term2, term3, term4, size1, size2, size3, size4,
-                    preTaxIncome):
+                    preTaxIncome, insurance, roadside, cleaning, servicing):
 
         term = 0
         print('\n\n' + "Car Cost: " + str(int(carCost)))
@@ -249,7 +271,7 @@ class Calc(Screen):
         monthly_fee = 20  # if there is time make this editable
 
         decrypt("user_data.json")
-        self.edit_json(car_cost_GST, kms_travelled_per_year, lease_term, car_size, salary_income)
+        self.edit_json(car_cost_GST, kms_travelled_per_year, lease_term, car_size, salary_income, insurance, roadside, cleaning, servicing)
         encrypt("user_data.json")
 
         # NORMAL COSTS CALCULATIONS

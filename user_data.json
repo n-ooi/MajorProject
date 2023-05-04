@@ -1,1 +1,26 @@
-gAAAAABkUvH4pUQ4r8QWi86ML4o5fW2vRVz4pyq75zBZ9EVMblKAGN03lDP7RdHkFTAooCMbjIMymhDUB5QrDgvOqyrtxBrRCGRMouPiA-8YPStkDm4Ua62_uG6v_JNP489Toa9cyCcprrfCpups7SOK1yM-hgHirBilP2-Dulj7q48pEOdTHk1kyZTgmJC_cFvyWz6Ulx70Q6cHS23H0aCW61YXduCSYYpMge0q97alCf1CQq0wlyceknvWpQOE0AMWdVcqltTDj_3zLrteY8VlIDgeKGRruTSmFxKAD37IyvK3NNeUnzof0mpDIIuB89aehj1eNo5wcaffDZRI33Vtv0QpSiV0oVBjW8FS-lw-Uvz5k6Xl3Tv_j5uuamZujBSA2eO1NKB6dk5Lqj-XrvM4bzwbMmsc11ry6D02eYjvFW15aOIO4drMv1Efv9OhrKhWsaDc3waFpKpFB9Id9MdeJimNTa8q3p8aKYbf4eTM8ZzGSgLFifSD08hGP3DoqeIPZJBXjqHj5hhS_iyRig0WAmbRlh-xI-ius7pc0_MFZlF1HWVAWqZyTIOHjrE4t20WYRipW9t2cYezQW52tct1vR5K3nuak629teu230QEA_CDq_oZ1aEbhGMbJS_5MmvS4pR3B9y8JpCp6bMubPYwrQEMnOczqnXQhe50C9uGiMeqLj-IeIiEZiqg8m3jG71_Kidnz9EXhZJNhcQaZ4ldwzDjfJ-m31n7DP9m30hsUHaNgUdIF46IXvaw2gbpq12aLSAhswEVU5h_dX_vKwLl7Y7fihoHoMFMG1TtlajZIml-GBplPPbghPY8TiPP8BiM875YH2FZyP7ZhKEpwxCZLgohFMN8vcudeHiaFEOt4y31yrcXmX3uS__XuWhc4DkLXpfORg_uSo8aIbAdfmWcKwKutQ-c_Cb94ogDKvk-0irqO2rIVif7bP-7nUULMsKFmkUKjmw4skb5DE_-8drstFntm11E1ST2f0TaQZu7Z0wKxPSXHzoB-kelo5N64KpSFiYk7wBIDI2Y1jTVepTRc_kwTFf7IfDxHrRkEXZLSiQz28_jy5eSDlj-tr7NQ3TrwU9oD78jP8hl8f-EF0nNXYln7VqSCKfmrMZBykuQSAqmuTmuoWFJZRuOWhxmtEuoPluqlLQFQID-0CVxdYvbqatWtSPErW8NID405A34pI6-DRwIGDfzAVEQlPXJbGucP0r1jhdzLqc_tVDOwER4HZJIc0B4HcK961fx6kbvF6mgBkPEm68AowtGTPH3lwoGbBcoRfzotOjt6C-BoP-ukHsp-95bcvAE2HBHzhUH4v4L54crJuuQOcqpbESifBfX6NYs-IxQbRgr80VY0u-7yJeB6EieZlSl8nhdIf20iWfYXmmDZnintraDbQIPARaOcslW9rLKX7BV1op32fgoNyYOIrLyOLgU_SAwdKq8IOnoB0H9zgB1X4-Mqcye4mztydjRYgzi6WojEIjWpUlQbi5TM7ThOhvuI2QJQiJG4ZpuogOMTk25mIn5YCtKXZ0Xw-7Ke946j14a07dTQymbP-P06gOOLD1GS5ifwg2_1M-Haac2DlausdoHJsWU7NC4Whpb3D6cFzBxYJkK7jH5IwFIbQtuLtFhHM6FWBq5cUpY4asXMBy7BvcczRwjAoFvN9ioVagyh_KqFXm2j7Kl2JGeeyM-77CoteHZfdyHAv1YxXBPy3-HQaHTVtJbEk7mD1px92s-C3nCH_ye1DYs4YL6F4H2HXjl05P75_FRtSdrU488RLGiKLoQ42a9KrK4ZrdtlOUv4xEe0QN0mmtc8rSjwMJoE2kWoPfjgadKp9qGTc1zkwaye9n61leB1lbtN4q1OEV6nXXiMsmJebXSpnhDPwUyQAVWVb6T1CwXMrTt4ct1kfg5OKQla2YBN5uVSJjQP_BrwU4LVsGNKU0YER6oq7-zVg==
+[
+    {
+        "username": ".",
+        "cost": 127000.0,
+        "distance": 20500.0,
+        "term": 4,
+        "size": "medium True",
+        "salary": 285000.0,
+        "insurance": true,
+        "roadside": true,
+        "cleaning": false,
+        "servicing": true
+    },
+    {
+        "username": "no",
+        "cost": 127000.0,
+        "distance": 20500.0,
+        "term": 4,
+        "size": "medium True",
+        "salary": 350000.0,
+        "insurance": false,
+        "roadside": false,
+        "cleaning": true,
+        "servicing": true
+    }
+]

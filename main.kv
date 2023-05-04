@@ -448,7 +448,7 @@ WindowManager:
                         Image:
                             source: "incidentals/insurance.png"
                         Check:
-                            id: insurance
+                            id: inc1
                             on_release:
                                 print("insurance", self.active)
 
@@ -460,7 +460,7 @@ WindowManager:
                         Image:
                             source: "incidentals/roadside.webp"
                         Check:
-                            id: roadside_assist
+                            id: inc2
                             on_release:
                                 print("roadside_assist", self.active)
 
@@ -472,7 +472,7 @@ WindowManager:
                         Image:
                             source: "incidentals/cleaning.png"
                         Check:
-                            id: cleaning
+                            id: inc3
                             on_release:
                                 print("cleaning", self.active)
 
@@ -484,7 +484,7 @@ WindowManager:
                         Image:
                             source: "incidentals/servicing.png"
                         Check:
-                            id: servicing
+                            id: inc4
                             on_release:
                                 print("servicing", self.active)
 
@@ -508,7 +508,7 @@ WindowManager:
                                 radius: [50]
                         on_release:
                             root.calc_values(carCost.value, annualDistance.value, term1.active, term2.active, term3.active, term4.active,
-                            size1.active, size2.active, size3.active, size4.active, preTaxIncome.value)
+                            size1.active, size2.active, size3.active, size4.active, preTaxIncome.value, inc1.active, inc2.active, inc3.active, inc4.active)
 
 
 <Title1@Label>:
