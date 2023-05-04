@@ -2,6 +2,7 @@ WindowManager:
     Login:
     SignUp:
     Calc:
+    Results:
 
 <Login>:
     name: "login"
@@ -291,6 +292,22 @@ WindowManager:
                                 radius: [50]
                         on_release:
                             app.root.current = "login"
+                            root.ids.carCost.value = 0
+                            root.ids.annualDistance.value = 0
+                            root.ids.term1.active = False
+                            root.ids.term2.active = False
+                            root.ids.term3.active = False
+                            root.ids.term4.active = False
+                            root.ids.size1.active = False
+                            root.ids.size2.active = False
+                            root.ids.size3.active = False
+                            root.ids.size4.active = False
+                            root.ids.preTaxIncome.value = 0
+                            root.ids.inc1.active = False
+                            root.ids.inc2.active = False
+                            root.ids.inc3.active = False
+                            root.ids.inc4.active = False
+
 
 
                 CalculatorCategory: # Introduction
@@ -510,6 +527,16 @@ WindowManager:
                             root.calc_values(carCost.value, annualDistance.value, term1.active, term2.active, term3.active, term4.active,
                             size1.active, size2.active, size3.active, size4.active, preTaxIncome.value, inc1.active, inc2.active, inc3.active, inc4.active)
 
+<Results>:
+    name: 'results'
+    BoxLayout:
+        spacing: "20dp"
+        padding: "20dp"
+        Label:
+            text: "Loading..."
+            text_color: rgba(229/255,60/255,40/255,1)
+        MDProgressBar:
+            id: progress
 
 <Title1@Label>:
     font_size: "80dp"
@@ -537,3 +564,11 @@ WindowManager:
     height: "10dp"
     size: "48dp", "48dp"
     selected_color: 229/255,60/255,40/255,1
+
+<Content>:
+    cols: 2
+    spacing: "10dp"
+    size_hint_y: None
+    size_hint_x: None
+    height: "360dp"
+    width: "500dp"

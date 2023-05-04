@@ -1,3 +1,6 @@
+from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.gridlayout import GridLayout
+from kivy.uix.label import Label
 from kivymd.app import MDApp
 from cryptography.fernet import Fernet
 from kivy.uix.widget import Widget
@@ -10,7 +13,9 @@ from kivymd.uix.dialog import MDDialog
 from kivymd.uix.button import MDFlatButton
 import numpy_financial as np
 import json
+import time
 
+results = ""
 current_user = ""
 
 with open('filekey.key', 'rb') as filekey:
@@ -52,6 +57,10 @@ with open('user_data.json', 'r') as f:
         encrypt('user_data.json')
 
 
+class Content(GridLayout):
+    pass
+
+
 class Calc(Screen):
     def on_enter(self):
         filename = "user_data.json"
@@ -60,6 +69,7 @@ class Calc(Screen):
             temp = json.load(f)
             i = 0
             new = True
+
             for entry in temp:
                 username = entry["username"]
                 car_cost = entry["cost"]
@@ -241,139 +251,207 @@ class Calc(Screen):
             print("NOT NEW USER!!! EDITING EXISTING DATA")
             edit_data()
 
+    def entry_valid(self, carCost, annualDistance, term1, term2, term3, term4, size1, size2, size3, size4,
+                    preTaxIncome, insurance, roadside, cleaning, servicing):
+        print("checking validity...")
+        if carCost == 0 or \
+                annualDistance == 0 or \
+                (term1 == False and term2 == False and term3 == False and term4 == False) or \
+                (size1 == False and size2 == False and size3 == False and size4 == False) or \
+                preTaxIncome == 0:
+            MDDialog(text="Check selections for errors.", ).open()
+            return False
+        else:
+            return True
+
     def calc_values(self, carCost, annualDistance, term1, term2, term3, term4, size1, size2, size3, size4,
                     preTaxIncome, insurance, roadside, cleaning, servicing):
+        if self.entry_valid(carCost, annualDistance, term1, term2, term3, term4, size1, size2, size3, size4,
+                            preTaxIncome, insurance, roadside, cleaning, servicing):
+            term = 0
+            print('\n\n' + "Car Cost: " + str(int(carCost)))
+            print("Distance: " + str(annualDistance))
+            for i in (f'12 months {term1}', f'24 months {term2}', f'36 months {term3}', f'48 months {term4}'):
+                if "True" in i:
+                    print("Term Length: " + str(i.replace("True", "")))
+                    term = int(i[0:1])
 
-        term = 0
-        print('\n\n' + "Car Cost: " + str(int(carCost)))
-        print("Distance: " + str(annualDistance))
-        for i in (f'12 months {term1}', f'24 months {term2}', f'36 months {term3}', f'48 months {term4}'):
-            if "True" in i:
-                print("Term Length: " + str(i.replace("True", "")))
-                term = int(i[0:1])
+            for i in (f'small {size1}', f'medium {size2}', f'large {size3}', f'sports {size4}'):
+                if "True" in i:
+                    print("Car Size: " + str(i.replace("True", "")))
+                    size = i
+            print("Salary: " + str(preTaxIncome))
 
-        for i in (f'small {size1}', f'medium {size2}', f'large {size3}', f'sports {size4}'):
-            if "True" in i:
-                print("Car Size: " + str(i.replace("True", "")))
-                size = i
-        print("Salary: " + str(preTaxIncome))
+            # SETTING PARAMETERS UP
+            car_size = size
+            car_cost_GST = float(carCost)
+            business_percentage = 0  # if there is time make this editable
+            salary_income = float(preTaxIncome)
+            residual_value = 0.4688  # if there is time make this editable
+            kms_travelled_per_year = float(annualDistance)
+            lease_term = term
+            novated_interest_rate = 0.075  # if there is time make this editable
+            standard_interest_rate = 0.03  # if there is time make this editable
+            monthly_fee = 20  # if there is time make this editable
 
-        # SETTING PARAMETERS UP
-        car_size = size
-        car_cost_GST = float(carCost)
-        business_percentage = 0  # if there is time make this editable
-        salary_income = float(preTaxIncome)
-        residual_value = 0.4688  # if there is time make this editable
-        kms_travelled_per_year = float(annualDistance)
-        lease_term = term
-        novated_interest_rate = 0.075  # if there is time make this editable
-        standard_interest_rate = 0.03  # if there is time make this editable
-        monthly_fee = 20  # if there is time make this editable
+            if cleaning:
+                cleaning_cost = 500
+            else:
+                cleaning_cost = 0
 
-        decrypt("user_data.json")
-        self.edit_json(car_cost_GST, kms_travelled_per_year, lease_term, car_size, salary_income, insurance, roadside, cleaning, servicing)
-        encrypt("user_data.json")
+            if roadside:
+                roadside_assist = 500
+            else:
+                roadside_assist = 0
 
-        # NORMAL COSTS CALCULATIONS
-        aP = -(car_cost_GST - (car_cost_GST * residual_value))
-        ar = standard_interest_rate / 12
-        an = (lease_term * 12) - 2
+            decrypt("user_data.json")
+            self.edit_json(car_cost_GST, kms_travelled_per_year, lease_term, car_size, salary_income, insurance,
+                           roadside, cleaning, servicing)
+            encrypt("user_data.json")
 
-        print("Standard PMT: " + str(np.pmt(ar, an, aP) * 12))
+            # NORMAL COSTS CALCULATIONS
+            aP = -(car_cost_GST - (car_cost_GST * residual_value))
+            ar = standard_interest_rate / 12
+            an = (lease_term * 12) - 2
 
-        normal_financing = np.pmt(ar, an, aP) * 12
-        normal_insurance = (car_cost_GST * 0.04)
-        normal_fees = 0
-        normal_registration = 800
-        normal_fuel = (((7.6 * (kms_travelled_per_year / 100)) * 1.5) * 1.2)
-        normal_maintenance = 1500
+            print("Standard PMT: " + str(np.pmt(ar, an, aP) * 12))
 
-        print("Normal Financing: " + str(normal_financing))
-        print("Normal Insurance: " + str(normal_insurance))
-        print("Normal Fuel: " + str(normal_fuel))
-        print("Normal Maintenance: " + str(normal_maintenance))
+            normal_financing = np.pmt(ar, an, aP) * 12
+            if insurance:
+                normal_insurance = (car_cost_GST * 0.04)
+            else:
+                normal_insurance = 0
+            normal_fees = 0
+            normal_registration = 800
+            normal_fuel = (((7.6 * (kms_travelled_per_year / 100)) * 1.5) * 1.2)
+            if servicing:
+                normal_maintenance = 1500
+            else:
+                normal_maintenance = 0
 
-        # NOVATED COSTS CALCULATIONS
-        car_cost_GST_adjusted = car_cost_GST - (car_cost_GST / 11)
-        if car_cost_GST > 69152:
-            car_cost_GST_adjusted = car_cost_GST - (69152 * .1)
+            print("Normal Financing: " + str(normal_financing))
+            print("Normal Insurance: " + str(normal_insurance))
+            print("Normal Fuel: " + str(normal_fuel))
+            print("Normal Maintenance: " + str(normal_maintenance))
 
-        bP = -(car_cost_GST_adjusted - (car_cost_GST_adjusted * residual_value))
-        br = novated_interest_rate / 12
-        bn = (lease_term * 12) - 2
+            # NOVATED COSTS CALCULATIONS
+            car_cost_GST_adjusted = car_cost_GST - (car_cost_GST / 11)
+            if car_cost_GST > 69152:
+                car_cost_GST_adjusted = car_cost_GST - (69152 * .1)
 
-        print("Novated PMT: " + str(np.pmt(br, bn, bP) * 12))
+            bP = -(car_cost_GST_adjusted - (car_cost_GST_adjusted * residual_value))
+            br = novated_interest_rate / 12
+            bn = (lease_term * 12) - 2
 
-        novated_financing = np.pmt(br, bn, bP) * 12
-        novated_insurance = normal_insurance - normal_insurance / 11
-        novated_fees = 12 * monthly_fee
-        novated_registration = normal_registration
-        novated_fuel = (normal_fuel - normal_fuel / 11)
-        novated_maintenance = normal_maintenance - normal_maintenance / 11
+            print("Novated PMT: " + str(np.pmt(br, bn, bP) * 12))
 
-        print("Novated Financing: " + str(novated_financing))
-        print("Novated Insurance: " + str(novated_insurance))
-        print("Novated Fuel: " + str(novated_fuel))
-        print("Novated Maintenance: " + str(novated_maintenance))
+            novated_financing = np.pmt(br, bn, bP) * 12
+            novated_insurance = normal_insurance - normal_insurance / 11
+            novated_roadside = roadside_assist - roadside_assist/11
+            novated_cleaning = cleaning_cost - cleaning_cost/11
+            novated_fees = 12 * monthly_fee
+            novated_registration = normal_registration
+            novated_fuel = (normal_fuel - normal_fuel / 11)
+            novated_maintenance = normal_maintenance - normal_maintenance / 11
 
-        # NOVATED TAX/INCOME CALCULATIONS
-        novated_total = novated_financing + novated_insurance + novated_fees + novated_registration + novated_fuel + novated_maintenance
-        print("\033[1;31;50m" + "Novated Total: " + str(novated_total) + "\033[0m")
+            print("Novated Financing: " + str(novated_financing))
+            print("Novated Insurance: " + str(novated_insurance))
+            print("Novated Fuel: " + str(novated_fuel))
+            print("Novated Maintenance: " + str(novated_maintenance))
 
-        novated_less_post_tax_deduction = (car_cost_GST * .2) * (1 - business_percentage)
-        print("Novated Post Tax: " + str(novated_less_post_tax_deduction))
+            # NOVATED TAX/INCOME CALCULATIONS
+            novated_total = novated_roadside + novated_cleaning + novated_financing + novated_insurance + novated_fees + novated_registration + novated_fuel + novated_maintenance
+            print("\033[1;31;50m" + "Novated Total: " + str(novated_total) + "\033[0m")
 
-        novated_less_pre_tax_deduction = novated_total + (
-                novated_less_post_tax_deduction / 11 - novated_less_post_tax_deduction)
-        print("Novated Pre Tax: " + str(novated_less_pre_tax_deduction))
+            novated_less_post_tax_deduction = (car_cost_GST * .2) * (1 - business_percentage)
+            print("Novated Post Tax: " + str(novated_less_post_tax_deduction))
 
-        novated_taxable_income = salary_income - novated_less_pre_tax_deduction
-        print("Novated Taxable Income: " + str(novated_taxable_income))
+            novated_less_pre_tax_deduction = novated_total + (
+                    novated_less_post_tax_deduction / 11 - novated_less_post_tax_deduction)
+            print("Novated Pre Tax: " + str(novated_less_pre_tax_deduction))
 
-        novated_less_tax = self.tax_calculate(novated_taxable_income)  # for some reason different to calculator
-        print("Novated Less Tax: " + str(novated_less_tax))
+            novated_taxable_income = salary_income - novated_less_pre_tax_deduction
+            print("Novated Taxable Income: " + str(novated_taxable_income))
 
-        novated_net_annual_income = novated_taxable_income - novated_less_tax
-        print("Novated Net Annual Income: " + str(novated_net_annual_income))
+            novated_less_tax = self.tax_calculate(novated_taxable_income)  # for some reason different to calculator
+            print("Novated Less Tax: " + str(novated_less_tax))
 
-        novated_lease_final = novated_net_annual_income - novated_less_post_tax_deduction
-        print("\033[1;31;50m" + "Novated Final: " + str(novated_lease_final) + "\033[0m")
+            novated_net_annual_income = novated_taxable_income - novated_less_tax
+            print("Novated Net Annual Income: " + str(novated_net_annual_income))
 
-        # NORMAL TAX/INCOME CALCULATIONS
-        normal_total = normal_financing + normal_insurance + normal_fees + normal_registration + normal_fuel + normal_maintenance
-        print("\033[1;31;50m" + "Normal Total: " + str(normal_total) + "\033[0m")
+            novated_lease_final = novated_net_annual_income - novated_less_post_tax_deduction
+            print("\033[1;31;50m" + "Novated Final: " + str(novated_lease_final) + "\033[0m")
 
-        normal_less_post_tax_deduction = normal_total
-        print("Normal Post Tax: " + str(normal_less_post_tax_deduction))
+            # NORMAL TAX/INCOME CALCULATIONS
+            normal_total = roadside_assist + cleaning_cost + normal_financing + normal_insurance + normal_fees + normal_registration + normal_fuel + normal_maintenance
+            print("\033[1;31;50m" + "Normal Total: " + str(normal_total) + "\033[0m")
 
-        normal_less_pre_tax_deduction = "-"
-        print("Normal Pre Tax: " + str(normal_less_pre_tax_deduction))
+            normal_less_post_tax_deduction = normal_total
+            print("Normal Post Tax: " + str(normal_less_post_tax_deduction))
 
-        normal_taxable_income = salary_income
-        print("Normal Taxable Income: " + str(normal_taxable_income))
+            normal_less_pre_tax_deduction = "-"
+            print("Normal Pre Tax: " + str(normal_less_pre_tax_deduction))
 
-        normal_less_tax = self.tax_calculate(normal_taxable_income)  # for some reason different to calculator
-        print("Normal Less Tax: " + str(normal_less_tax))
+            normal_taxable_income = salary_income
+            print("Normal Taxable Income: " + str(normal_taxable_income))
 
-        normal_net_annual_income = normal_taxable_income - normal_less_tax
-        print("Normal Net Annual Income: " + str(normal_net_annual_income))
+            normal_less_tax = self.tax_calculate(normal_taxable_income)  # for some reason different to calculator
+            print("Normal Less Tax: " + str(normal_less_tax))
 
-        normal_lease_final = normal_net_annual_income - normal_less_post_tax_deduction
-        print("\033[1;31;50m" + "Normal Final: " + str(normal_lease_final) + "\033[0m")
+            normal_net_annual_income = normal_taxable_income - normal_less_tax
+            print("Normal Net Annual Income: " + str(normal_net_annual_income))
 
-        # SAVINGS
-        tax_savings = novated_lease_final - normal_lease_final
-        print("\033[1;33;50m" + "Tax Savings: " + str(tax_savings) + "\033[0m")
+            normal_lease_final = normal_net_annual_income - normal_less_post_tax_deduction
+            print("\033[1;31;50m" + "Normal Final: " + str(normal_lease_final) + "\033[0m")
 
-        money_savings = tax_savings + normal_total - novated_total
-        print("\033[1;33;50m" + "Money Savings: " + str(money_savings) + "\033[0m")
+            # SAVINGS
+            tax_savings = novated_lease_final - normal_lease_final
+            print("\033[1;33;50m" + "Tax Savings: " + str(tax_savings) + "\033[0m")
 
-        window = MDDialog(text="Tax Savings: $" + str(round(tax_savings, 2)) +
-                               "\nYearly Payment: $" + str(round(novated_total, 2)) +
-                               "\nMonthly Payment: $" + str(round(novated_total / 12, 2))
+            money_savings = tax_savings + normal_total - novated_total
+            print("\033[1;33;50m" + "Money Savings: " + str(money_savings) + "\033[0m")
 
-                          )
-        window.open()
+            label1 = Label(color="black", text=f"Without Novated Lease: \n " + \
+                                              f"------------------------------ \n" + \
+                                              f"Financial Lease: ${round(normal_financing, 2)} \n" + \
+                                              f"Registration: ${round(normal_registration, 2)} \n" + \
+                                              f"Fuel: ${round(normal_fuel, 2)} \n" + \
+                                              f"Maintenance/Servicing: ${round(normal_maintenance, 2)} \n" + \
+                                              f"Insurance: ${round(normal_insurance, 2)} \n" + \
+                                              f"Cleaning: ${round(cleaning_cost, 2)} \n" + \
+                                              f"Roadside Assist: ${round(roadside_assist, 2)} \n" + \
+                                              f"Fees: N/A \n" + \
+                                               f"------------------------------ \n" + \
+                                               f"Normal Total: ${round(normal_total, 2)} \n")
+
+
+            label2 = Label(color="black", text=f"With Novated Lease: \n " + \
+                                              f"------------------------------ \n" + \
+                                              f"Financial Lease: ${round(novated_financing, 2)} \n" + \
+                                              f"Registration: ${round(novated_registration, 2)} \n" + \
+                                              f"Fuel: ${round(novated_fuel, 2)} \n" + \
+                                              f"Maintenance/Servicing: ${round(novated_maintenance, 2)} \n" + \
+                                              f"Insurance: ${round(novated_insurance, 2)} \n" + \
+                                              f"Cleaning: ${round(novated_cleaning, 2)} \n" + \
+                                              f"Roadside Assist: ${round(novated_roadside, 2)} \n" + \
+                                              f"Fees: ${round(novated_fees, 2)} \n" + \
+                                               f"------------------------------ \n" + \
+                                               f"Novated Total: ${round(novated_total, 2)} \n")
+
+            label3 = Label(color="black", text=f"Totals: \n " + \
+                                              f"------------------------------ \n" + \
+                                              f"Tax Savings: $" + str(round(tax_savings, 2)) + \
+                                              f"\nYearly Payment: $" + str(round(novated_total, 2)) + \
+                                              f"\nMonthly Payment: $" + str(round(novated_total / 12, 2)))
+
+            content = Content()
+            window = MDDialog(title="Results", type="custom", content_cls=content)
+            content.add_widget(label1)
+            content.add_widget(label2)
+            content.add_widget(label3)
+            window.open()
+
+        # MDApp.get_running_app().switch_screen("results")
 
 
 class Login(Screen):
@@ -433,6 +511,11 @@ class SignUp(Screen):
         encrypt('login-details.csv')
 
 
+class Results(Screen):
+    def on_enter(self):
+        pass
+
+
 class WindowManager(ScreenManager):  # this class defines the ScreenManager
     pass
 
@@ -444,6 +527,7 @@ encrypt('login-details.csv')
 WindowManager().add_widget(Login(name='login'))
 WindowManager().add_widget(SignUp(name='signup'))
 WindowManager().add_widget(Calc(name='Calc'))
+WindowManager().add_widget(Results(name='results'))
 
 
 class EasyPeasyLeasy(MDApp):
