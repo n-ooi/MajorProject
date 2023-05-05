@@ -20,6 +20,7 @@ from kivymd.uix.list import OneLineAvatarIconListItem
 
 results = ""
 current_user = ""
+entryNum = ""
 
 with open('filekey.key', 'rb') as filekey:
     key = filekey.read()
@@ -74,6 +75,8 @@ class ItemConfirm(OneLineAvatarIconListItem):
                 check.active = False
 
         print(f"Selected {self.ids._lbl_primary.text}")
+        global entryNum
+        entryNum = int((self.ids._lbl_primary.text).split()[-1])
 
 
 class SelectionButton(MDFlatButton):
@@ -88,14 +91,15 @@ class Calc(Screen):
 
 
     def update_entry(self, x):
-        print("Hmmm" + str(x))
-
+        global entryNum
+        global current_user
+        print(f"searching for {current_user} - {entryNum}")
         filename = 'user_data.json'
         decrypt(filename)
         with open(filename, "r") as f:
             temp = json.load(f)
             i = 0
-            new = True
+            entryIndex = 0
 
             for entry in temp:
                 username = entry["username"]
@@ -110,48 +114,47 @@ class Calc(Screen):
                 inc4 = entry["servicing"]
 
                 if username == current_user:
+                    entryIndex = entryIndex + 1
+                    if entryIndex == entryNum:
+                        print(f"{current_user}'s {entryNum}th entry:")
+                        print(f"Username: {username}")
+                        print(f"Cost: {car_cost}")
+                        print(f"Distance: {distance_travelled}")
+                        print(f"Term: {lease_term}")
+                        print(f"Size: {car_size}")
+                        print(f"Salary: {salary_income}")
 
-                    new = False
+                        self.ids.carCost.value = car_cost
+                        self.ids.annualDistance.value = distance_travelled
+                        self.ids.preTaxIncome.value = salary_income
 
-                    print(f"Index Number {i}")
-                    print(f"Username: {username}")
-                    print(f"Cost: {car_cost}")
-                    print(f"Distance: {distance_travelled}")
-                    print(f"Term: {lease_term}")
-                    print(f"Size: {car_size}")
-                    print(f"Salary: {salary_income}")
+                        if lease_term == 1:
+                            self.ids.term1.active = True
+                        elif lease_term == 2:
+                            self.ids.term2.active = True
+                        elif lease_term == 3:
+                            self.ids.term3.active = True
+                        elif lease_term == 4:
+                            self.ids.term4.active = True
 
-                    self.ids.carCost.value = car_cost
-                    self.ids.annualDistance.value = distance_travelled
-                    self.ids.preTaxIncome.value = salary_income
+                        if car_size == "small True":
+                            self.ids.size1.active = True
+                        elif car_size == "medium True":
+                            self.ids.size2.active = True
+                        elif car_size == "large True":
+                            self.ids.size3.active = True
+                        elif car_size == "sports True":
+                            self.ids.size4.active = True
 
-                    if lease_term == 1:
-                        self.ids.term1.active = True
-                    elif lease_term == 2:
-                        self.ids.term2.active = True
-                    elif lease_term == 3:
-                        self.ids.term3.active = True
-                    elif lease_term == 4:
-                        self.ids.term4.active = True
-
-                    if car_size == "small True":
-                        self.ids.size1.active = True
-                    elif car_size == "medium True":
-                        self.ids.size2.active = True
-                    elif car_size == "large True":
-                        self.ids.size3.active = True
-                    elif car_size == "sports True":
-                        self.ids.size4.active = True
-
-                    print(inc1, inc2, inc3, inc4)
-                    if inc1:
-                        self.ids.inc1.active = True
-                    if inc2:
-                        self.ids.inc2.active = True
-                    if inc3:
-                        self.ids.inc4.active = True
-                    if inc4:
-                        self.ids.inc4.active = True
+                        print(inc1, inc2, inc3, inc4)
+                        if inc1:
+                            self.ids.inc1.active = True
+                        if inc2:
+                            self.ids.inc2.active = True
+                        if inc3:
+                            self.ids.inc4.active = True
+                        if inc4:
+                            self.ids.inc4.active = True
 
                 i = i + 1
         encrypt('user_data.json')
@@ -163,16 +166,21 @@ class Calc(Screen):
         filename = "user_data.json"
         decrypt(filename)
 
-        entries = ["Entry 1", "Entry 2", "Entry 3"]
+        stuff = []
+
+        with open(filename, "r") as f:
+            temp = json.load(f)
+            entryIndex = 0
+            for entry in temp:
+                username = entry["username"]
+                if username == current_user:
+                    entryIndex = entryIndex + 1
+                    stuff.insert(0, ItemConfirm(text=f"Entry {entryIndex}"))
 
         window = MDDialog(
             title="Past Entries",
             type="confirmation",
-            items=[
-                ItemConfirm(text=entries[0]),
-                ItemConfirm(text=entries[1]),
-                ItemConfirm(text=entries[2]),
-            ],
+            items=stuff,
             buttons=[
                 SelectionButton(
                     text="SELECT", on_release=self.update_entry
@@ -329,7 +337,8 @@ class Calc(Screen):
             add_data()
         else:
             print("NOT NEW USER!!! EDITING EXISTING DATA")
-            edit_data()
+            # edit_data() // removed as we need more than 1 result saved
+            add_data()
 
     def entry_valid(self, carCost, annualDistance, term1, term2, term3, term4, size1, size2, size3, size4,
                     preTaxIncome, insurance, roadside, cleaning, servicing):
