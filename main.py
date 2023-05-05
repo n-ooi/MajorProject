@@ -1,6 +1,7 @@
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.label import Label
+from kivy.uix.scrollview import ScrollView
 from kivymd.app import MDApp
 from cryptography.fernet import Fernet
 from kivy.uix.widget import Widget
@@ -14,6 +15,8 @@ from kivymd.uix.button import MDFlatButton
 import numpy_financial as np
 import json
 import time
+
+from kivymd.uix.list import OneLineAvatarIconListItem
 
 results = ""
 current_user = ""
@@ -60,11 +63,35 @@ with open('user_data.json', 'r') as f:
 class Content(GridLayout):
     pass
 
+class ItemConfirm(OneLineAvatarIconListItem):
+    divider = None
+
+    def set_icon(self, instance_check):
+        instance_check.active = True
+        check_list = instance_check.get_widgets(instance_check.group)
+        for check in check_list:
+            if check != instance_check:
+                check.active = False
+
+        print(f"Selected {self.ids._lbl_primary.text}")
+
+
+class SelectionButton(MDFlatButton):
+    def test_fn(self):
+        MDApp.get_running_app().switch_screen("Calc")
+
 
 class Calc(Screen):
     def on_enter(self):
+        print("Calc Page Loaded...")
         filename = "user_data.json"
-        decrypt('user_data.json')
+
+
+    def update_entry(self, x):
+        print("Hmmm" + str(x))
+
+        filename = 'user_data.json'
+        decrypt(filename)
         with open(filename, "r") as f:
             temp = json.load(f)
             i = 0
@@ -128,6 +155,59 @@ class Calc(Screen):
 
                 i = i + 1
         encrypt('user_data.json')
+
+
+
+    def manager_screen(self):
+
+        filename = "user_data.json"
+        decrypt(filename)
+
+        entries = ["Entry 1", "Entry 2", "Entry 3"]
+
+        window = MDDialog(
+            title="Past Entries",
+            type="confirmation",
+            items=[
+                ItemConfirm(text=entries[0]),
+                ItemConfirm(text=entries[1]),
+                ItemConfirm(text=entries[2]),
+            ],
+            buttons=[
+                SelectionButton(
+                    text="SELECT", on_release=self.update_entry
+                ),
+            ],
+        )
+        window.open()
+
+        with open(filename, "r") as f:
+            temp = json.load(f)
+            i = 0
+            for entry in temp:
+                username = entry["username"]
+                car_cost = entry["cost"]
+                distance_travelled = entry["distance"]
+                lease_term = entry["term"]
+                car_size = entry["size"]
+                salary_income = entry["salary"]
+                insurance = entry["insurance"]
+                roadside = entry["roadside"]
+                cleaning = entry["cleaning"]
+                servicing = entry["servicing"]
+
+                instance = Label(color="black",
+                                 text=f"Username: {username}\n-----------------------\nCar Cost: {car_cost}\n" + \
+                                      f"Annual Distance: {distance_travelled}\nTerm Length: {lease_term}\n" + \
+                                      f"Car Size: {car_size.replace('True', '').replace('False', '').upper()}" + \
+                                      f"Income: {salary_income}\nInsurance: {insurance}\nRoadside Assist: {roadside}" + \
+                                      f"Cleaning: {cleaning}\nServicing: {servicing}")
+                # content.ids.grid.add_widget(instance)
+
+                i = i + 1
+
+        window.open()
+        encrypt(filename)
 
     def tax_calculate(self, taxable_income):
         tax = 0
@@ -347,8 +427,8 @@ class Calc(Screen):
 
             novated_financing = np.pmt(br, bn, bP) * 12
             novated_insurance = normal_insurance - normal_insurance / 11
-            novated_roadside = roadside_assist - roadside_assist/11
-            novated_cleaning = cleaning_cost - cleaning_cost/11
+            novated_roadside = roadside_assist - roadside_assist / 11
+            novated_cleaning = cleaning_cost - cleaning_cost / 11
             novated_fees = 12 * monthly_fee
             novated_registration = normal_registration
             novated_fuel = (normal_fuel - normal_fuel / 11)
@@ -412,37 +492,36 @@ class Calc(Screen):
             print("\033[1;33;50m" + "Money Savings: " + str(money_savings) + "\033[0m")
 
             label1 = Label(color="black", text=f"Without Novated Lease: \n " + \
-                                              f"------------------------------ \n" + \
-                                              f"Financial Lease: ${round(normal_financing, 2)} \n" + \
-                                              f"Registration: ${round(normal_registration, 2)} \n" + \
-                                              f"Fuel: ${round(normal_fuel, 2)} \n" + \
-                                              f"Maintenance/Servicing: ${round(normal_maintenance, 2)} \n" + \
-                                              f"Insurance: ${round(normal_insurance, 2)} \n" + \
-                                              f"Cleaning: ${round(cleaning_cost, 2)} \n" + \
-                                              f"Roadside Assist: ${round(roadside_assist, 2)} \n" + \
-                                              f"Fees: N/A \n" + \
+                                               f"------------------------------ \n" + \
+                                               f"Financial Lease: ${round(normal_financing, 2)} \n" + \
+                                               f"Registration: ${round(normal_registration, 2)} \n" + \
+                                               f"Fuel: ${round(normal_fuel, 2)} \n" + \
+                                               f"Maintenance/Servicing: ${round(normal_maintenance, 2)} \n" + \
+                                               f"Insurance: ${round(normal_insurance, 2)} \n" + \
+                                               f"Cleaning: ${round(cleaning_cost, 2)} \n" + \
+                                               f"Roadside Assist: ${round(roadside_assist, 2)} \n" + \
+                                               f"Fees: N/A \n" + \
                                                f"------------------------------ \n" + \
                                                f"Normal Total: ${round(normal_total, 2)} \n")
 
-
             label2 = Label(color="black", text=f"With Novated Lease: \n " + \
-                                              f"------------------------------ \n" + \
-                                              f"Financial Lease: ${round(novated_financing, 2)} \n" + \
-                                              f"Registration: ${round(novated_registration, 2)} \n" + \
-                                              f"Fuel: ${round(novated_fuel, 2)} \n" + \
-                                              f"Maintenance/Servicing: ${round(novated_maintenance, 2)} \n" + \
-                                              f"Insurance: ${round(novated_insurance, 2)} \n" + \
-                                              f"Cleaning: ${round(novated_cleaning, 2)} \n" + \
-                                              f"Roadside Assist: ${round(novated_roadside, 2)} \n" + \
-                                              f"Fees: ${round(novated_fees, 2)} \n" + \
+                                               f"------------------------------ \n" + \
+                                               f"Financial Lease: ${round(novated_financing, 2)} \n" + \
+                                               f"Registration: ${round(novated_registration, 2)} \n" + \
+                                               f"Fuel: ${round(novated_fuel, 2)} \n" + \
+                                               f"Maintenance/Servicing: ${round(novated_maintenance, 2)} \n" + \
+                                               f"Insurance: ${round(novated_insurance, 2)} \n" + \
+                                               f"Cleaning: ${round(novated_cleaning, 2)} \n" + \
+                                               f"Roadside Assist: ${round(novated_roadside, 2)} \n" + \
+                                               f"Fees: ${round(novated_fees, 2)} \n" + \
                                                f"------------------------------ \n" + \
                                                f"Novated Total: ${round(novated_total, 2)} \n")
 
             label3 = Label(color="black", text=f"Totals: \n " + \
-                                              f"------------------------------ \n" + \
-                                              f"Tax Savings: $" + str(round(tax_savings, 2)) + \
-                                              f"\nYearly Payment: $" + str(round(novated_total, 2)) + \
-                                              f"\nMonthly Payment: $" + str(round(novated_total / 12, 2)))
+                                               f"------------------------------ \n" + \
+                                               f"Tax Savings: $" + str(round(tax_savings, 2)) + \
+                                               f"\nYearly Payment: $" + str(round(novated_total, 2)) + \
+                                               f"\nMonthly Payment: $" + str(round(novated_total / 12, 2)))
 
             content = Content()
             window = MDDialog(title="Results", type="custom", content_cls=content)

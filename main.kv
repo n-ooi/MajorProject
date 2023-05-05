@@ -271,6 +271,9 @@ WindowManager:
                                 size: self.size
                                 pos: self.pos
                                 radius: [50]
+                        on_release:
+                            root.manager_screen()
+
                     Label:
 
                     Button:
@@ -572,3 +575,12 @@ WindowManager:
     size_hint_x: None
     height: "360dp"
     width: "500dp"
+
+<ItemConfirm>:
+    on_release: root.set_icon(check)
+    CheckboxLeftWidget:
+        id: check
+        group: "check"
+
+<SelectionButton>:
+    on_release: root.test_fn()
