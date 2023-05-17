@@ -1,22 +1,26 @@
+import json
+from datetime import datetime
+
+import numpy_financial as np
+import pandas as pd
+from cryptography.fernet import Fernet
+from kivy.core.window import Window
+from kivy.metrics import dp
 from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.button import Button
+from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.label import Label
-from kivy.uix.scrollview import ScrollView
-from kivymd.app import MDApp
-from cryptography.fernet import Fernet
-from kivy.uix.widget import Widget
-from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.uix.popup import Popup
-from kivy.uix.floatlayout import FloatLayout
-import pandas as pd
-from kivy.core.window import Window
-from kivymd.uix.dialog import MDDialog
+from kivy.uix.screenmanager import Screen, ScreenManager
+from kivy.uix.scrollview import ScrollView
+from kivy.uix.widget import Widget
+from kivymd.app import MDApp
 from kivymd.uix.button import MDFlatButton
-import numpy_financial as np
-import json
-import time
-
+from kivymd.uix.datatables import MDDataTable
+from kivymd.uix.dialog import MDDialog
 from kivymd.uix.list import OneLineAvatarIconListItem
+from kivymd.uix.textfield import MDTextField
 
 results = ""
 current_user = ""
@@ -173,9 +177,10 @@ class Calc(Screen):
             entryIndex = 0
             for entry in temp:
                 username = entry["username"]
+                time = entry["time"]
                 if username == current_user:
                     entryIndex = entryIndex + 1
-                    stuff.insert(0, ItemConfirm(text=f"Entry {entryIndex}"))
+                    stuff.insert(0, ItemConfirm(text=f"{time} - Submission {entryIndex}"))
 
         window = MDDialog(
             title="Past Entries",
@@ -187,33 +192,6 @@ class Calc(Screen):
                 ),
             ],
         )
-        window.open()
-
-        with open(filename, "r") as f:
-            temp = json.load(f)
-            i = 0
-            for entry in temp:
-                username = entry["username"]
-                car_cost = entry["cost"]
-                distance_travelled = entry["distance"]
-                lease_term = entry["term"]
-                car_size = entry["size"]
-                salary_income = entry["salary"]
-                insurance = entry["insurance"]
-                roadside = entry["roadside"]
-                cleaning = entry["cleaning"]
-                servicing = entry["servicing"]
-
-                instance = Label(color="black",
-                                 text=f"Username: {username}\n-----------------------\nCar Cost: {car_cost}\n" + \
-                                      f"Annual Distance: {distance_travelled}\nTerm Length: {lease_term}\n" + \
-                                      f"Car Size: {car_size.replace('True', '').replace('False', '').upper()}" + \
-                                      f"Income: {salary_income}\nInsurance: {insurance}\nRoadside Assist: {roadside}" + \
-                                      f"Cleaning: {cleaning}\nServicing: {servicing}")
-                # content.ids.grid.add_widget(instance)
-
-                i = i + 1
-
         window.open()
         encrypt(filename)
 
@@ -280,37 +258,11 @@ class Calc(Screen):
                     print("\n\n")
                     i = i + 1
 
-        def edit_data():
-            new_data = []
-            with open(filename, "r") as f:
-                temp = json.load(f)
-                i = 0
-                edit_option = 0
-                for entry in temp:
-                    if current_user == entry["username"]:
-                        edit_option = i
-                    i = i + 1
-            i = 0
-
-            for entry in temp:
-                if i == int(edit_option):
-                    new_data.append(
-                        {"username": current_user, "cost": cost, "distance": distance, "term": term, "size": size,
-                         "salary": salary, "insurance": inc1, "roadside": inc2, "cleaning": inc3, "servicing": inc4})
-                    i = i + 1
-                    "doing stuff"
-                else:
-                    new_data.append(entry)
-                    i = i + 1
-
-            print(new_data)
-            with open(filename, "w") as f:
-                json.dump(new_data, f, indent=4)
-
         def add_data():
             item_data = {}
             with open(filename, "r") as f:
                 temp = json.load(f)
+            item_data["time"] = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
             item_data["username"] = current_user
             item_data["cost"] = cost
             item_data["distance"] = distance
@@ -337,7 +289,6 @@ class Calc(Screen):
             add_data()
         else:
             print("NOT NEW USER!!! EDITING EXISTING DATA")
-            # edit_data() // removed as we need more than 1 result saved
             add_data()
 
     def entry_valid(self, carCost, annualDistance, term1, term2, term3, term4, size1, size2, size3, size4,
@@ -500,7 +451,7 @@ class Calc(Screen):
             money_savings = tax_savings + normal_total - novated_total
             print("\033[1;33;50m" + "Money Savings: " + str(money_savings) + "\033[0m")
 
-            label1 = Label(color="black", text=f"Without Novated Lease: \n " + \
+            label1 = Label(color="black", text=f"\n\nWithout Novated Lease: \n " + \
                                                f"------------------------------ \n" + \
                                                f"Financial Lease: ${round(normal_financing, 2)} \n" + \
                                                f"Registration: ${round(normal_registration, 2)} \n" + \
@@ -513,7 +464,7 @@ class Calc(Screen):
                                                f"------------------------------ \n" + \
                                                f"Normal Total: ${round(normal_total, 2)} \n")
 
-            label2 = Label(color="black", text=f"With Novated Lease: \n " + \
+            label2 = Label(color="black", text=f"\n\nWith Novated Lease: \n " + \
                                                f"------------------------------ \n" + \
                                                f"Financial Lease: ${round(novated_financing, 2)} \n" + \
                                                f"Registration: ${round(novated_registration, 2)} \n" + \
@@ -549,19 +500,18 @@ class Login(Screen):
     def login_validation(self, LoginUsername, LoginPassword, root):
         decrypt('login-details.csv')
         check = pd.read_csv('login-details.csv')
-        print(LoginUsername)
-        print(LoginPassword)
         if LoginUsername not in check['Username'].unique():
             print("Username not found")
             MDDialog(text="Username or Password are incorrect.", ).open()
             pass  # deny access (Username not registered)
         else:
             user_info = check[['Username', 'Password']][check['Username'] == LoginUsername]
-            print(user_info)
-            user_password = list(str(user_info).split(" "))[-1]
-            print(user_password)
+            user_password = user_info['Password'].values[0]
             if LoginPassword == user_password:
-                MDApp.get_running_app().switch_screen("Calc")
+                if LoginUsername == 'admin':
+                        MDApp.get_running_app().switch_screen("manager")
+                else:
+                    MDApp.get_running_app().switch_screen("Calc")
                 print("Password Correct")
                 global current_user
                 current_user = LoginUsername
@@ -585,23 +535,112 @@ class SignUp(Screen):
         if SignUpPassword2 != SignUpPassword1:
             MDDialog(text="Passwords don't match.", ).open()
         else:
-            if SignUpUsername and SignUpPassword1:
-                if SignUpUsername not in users['Username'].unique():
-                    print("UNIQUE USERNAME: " + SignUpUsername + "\n")
-                    print(users['Username'].unique())
-                    # if Username does not exist already then append to the csv file
-                    MDApp.get_running_app().switch_screen("login")  # to change current screen to log in the user now
-                    user.to_csv('login-details.csv', mode='a', header=False, index=False)
+            if SignUpUsername.isalnum():
+                if SignUpUsername and SignUpPassword1:
+                    if SignUpUsername not in users['Username'].unique():
+                        # if Username does not exist already then append to the csv file
+                        MDApp.get_running_app().switch_screen("login")  # to change current screen to log in the user now
+                        user.to_csv('login-details.csv', mode='a', header=False, index=False)
+                    else:
+                        MDDialog(text="Username Taken.", ).open()
                 else:
-                    MDDialog(text="Username Taken.", ).open()
+                    MDDialog(text="Some fields are missing or incorrect.", ).open()
             else:
-                MDDialog(text="Some fields are missing or incorrect.", ).open()
+                MDDialog(text="Username must be alphanumeric.", ).open()
         encrypt('login-details.csv')
 
+data_stuff = []
 
-class Results(Screen):
+
+class Manager(Screen):
     def on_enter(self):
-        pass
+        global data_stuff
+        global current_user
+        print(f"user = {current_user}")
+        if current_user == 'admin':
+            print("Access Approved - Building Screen...")
+            filename = 'user_data.json'
+            decrypt(filename)
+            with open(filename, "r") as f:
+                temp = json.load(f)
+                i = 0
+                for entry in temp:
+                    time = entry["time"]
+                    username = entry["username"]
+                    car_cost = entry["cost"]
+                    distance_travelled = entry["distance"]
+                    lease_term = entry["term"]
+                    car_size = entry["size"]
+                    salary_income = entry["salary"]
+                    inc1 = entry["insurance"]
+                    inc2 = entry["roadside"]
+                    inc3 = entry["cleaning"]
+                    inc4 = entry["servicing"]
+                    data_stuff.append([i + 1, time, username, car_cost, distance_travelled, lease_term,
+                                       car_size.replace(' True', '').replace(' False', ''), salary_income, inc1, inc2, inc3,
+                                       inc4])
+                    i = i + 1
+
+            manager_data = BoxLayout(
+                orientation='vertical',
+                padding='30dp'
+            )
+
+            search_field = MDTextField(
+                hint_text='Search',
+                on_text_validate=self.update_data,
+                size_hint_y=0.1
+            )
+
+            toolbar = BoxLayout(
+                orientation='horizontal',
+                size_hint_y=.2
+            )
+
+            toolbar.add_widget(Button(text="Home", on_release=self.return_to_calc))
+
+            manager_data.add_widget(toolbar)
+            manager_data.add_widget(search_field)
+
+            self.data_tables = MDDataTable(
+                use_pagination=True,
+                pagination_menu_pos='center',
+                column_data=[
+                    ("No.", dp(30)),
+                    ("Time", dp(30)),
+                    ("Username", dp(30)),
+                    ("Car Cost", dp(30)),
+                    ("Annual Distance", dp(30)),
+                    ("Lease Term", dp(30)),
+                    ("Car Size", dp(30)),
+                    ("Salary/Income", dp(30)),
+                    ("Insurance", dp(30)),
+                    ("Roadside A", dp(30)),
+                    ("Cleaning", dp(30)),
+                    ("Servicing", dp(30))
+                ],
+                row_data=data_stuff
+            )
+            manager_data.add_widget(self.data_tables)
+            encrypt(filename)
+            self.add_widget(manager_data)
+
+            return self
+
+
+
+    def update_data(self, instance):
+        global data_stuff
+        self.data_tables.row_data = data_stuff
+        search_query = instance.text.lower()
+        filtered_data = [row for row in self.data_tables.row_data if search_query in str(row).lower()]
+        self.data_tables.row_data = filtered_data
+
+    def return_to_calc(self, instance):
+        MDApp.get_running_app().switch_screen("login")
+
+    def on_leave(self, *args):
+        self.clear_widgets()
 
 
 class WindowManager(ScreenManager):  # this class defines the ScreenManager
@@ -615,7 +654,7 @@ encrypt('login-details.csv')
 WindowManager().add_widget(Login(name='login'))
 WindowManager().add_widget(SignUp(name='signup'))
 WindowManager().add_widget(Calc(name='Calc'))
-WindowManager().add_widget(Results(name='results'))
+WindowManager().add_widget(Manager(name='manager'))
 
 
 class EasyPeasyLeasy(MDApp):

@@ -2,10 +2,14 @@ WindowManager:
     Login:
     SignUp:
     Calc:
-    Results:
+    Manager:
+
+<TooltipMDIconButton@MDIconButton+MDTooltip>
 
 <Login>:
     name: "login"
+    FloatLayout:
+
     MDBoxLayout:
         orientation: "horizontal"
         BoxLayout:
@@ -28,9 +32,15 @@ WindowManager:
                     orientation: "vertical"
                     padding: "40dp","12dp"
                     height: root.height*0.08
-                    MDLabel:
-                        text: "Username"
-                        font_size: "18dp"
+                    BoxLayout:
+                        size_hint_x: 0.25
+                        MDLabel:
+                            text: "Username"
+                            font_size: "18dp"
+                        TooltipMDIconButton:
+                            icon: "account"
+                            tooltip_text: "Type your Username Here"
+                            pos_hint: {"center_x": .5, "center_y": .5}
                     MDTextField:
                         id: LoginUsername
                         line_color_focus: 229/255,60/255,40/255,1
@@ -530,16 +540,11 @@ WindowManager:
                             root.calc_values(carCost.value, annualDistance.value, term1.active, term2.active, term3.active, term4.active,
                             size1.active, size2.active, size3.active, size4.active, preTaxIncome.value, inc1.active, inc2.active, inc3.active, inc4.active)
 
-<Results>:
-    name: 'results'
-    BoxLayout:
-        spacing: "20dp"
-        padding: "20dp"
-        Label:
-            text: "Loading..."
-            text_color: rgba(229/255,60/255,40/255,1)
-        MDProgressBar:
-            id: progress
+<Manager>:
+    name: 'manager'
+    Label:
+        text: "Loading..."
+        color: 'black'
 
 <Title1@Label>:
     font_size: "80dp"
