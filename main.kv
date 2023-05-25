@@ -33,13 +33,12 @@ WindowManager:
                     padding: "40dp","12dp"
                     height: root.height*0.08
                     BoxLayout:
-                        size_hint_x: 0.25
                         MDLabel:
                             text: "Username"
                             font_size: "18dp"
                         TooltipMDIconButton:
-                            icon: "account"
-                            tooltip_text: "Type your Username Here"
+                            icon: "account-circle-outline"
+                            tooltip_text: ""
                             pos_hint: {"center_x": .5, "center_y": .5}
                     MDTextField:
                         id: LoginUsername
@@ -53,9 +52,18 @@ WindowManager:
                 MDCard:
                     orientation: "vertical"
                     padding: "40dp","12dp"
-                    MDLabel:
-                        text: "Password"
-                        font_size: "18dp"
+                    BoxLayout:
+                        MDLabel:
+                            text: "Password"
+                            font_size: "18dp"
+                        TooltipMDIconButton:
+                            id: view
+                            icon: "eye-off-outline"
+                            tooltip_text: "Toggle Password View"
+                            pos_hint: {"center_x": .5, "center_y": .5}
+                            on_release:
+                                root.password_view(self.icon)
+
                     MDTextField:
                         id: LoginPassword
                         line_color_focus: 229/255,60/255,40/255,1
@@ -80,8 +88,8 @@ WindowManager:
                     root.manager.transition.direction = "down"
                     root.ids.LoginUsername.text = ""
                     root.ids.LoginPassword.text = ""
-
-
+                    root.ids.view.icon = "eye-off-outline"
+                    root.ids.LoginPassword.password = ""
 
             Button:
                 text: "Haven't got an account? Sign Up"
@@ -98,6 +106,8 @@ WindowManager:
                     root.manager.transition.direction = "down"
                     root.ids.LoginUsername.text = ""
                     root.ids.LoginPassword.text = ""
+                    root.ids.view.icon = "eye-off-outline"
+                    root.ids.LoginPassword.password = ""
 
 
         BoxLayout:
@@ -149,9 +159,17 @@ WindowManager:
                 MDCard:
                     orientation: "vertical"
                     padding: "40dp","12dp"
-                    MDLabel:
-                        text: "Password"
-                        font_size: "18dp"
+                    BoxLayout:
+                        MDLabel:
+                            text: "Password"
+                            font_size: "18dp"
+                        TooltipMDIconButton:
+                            id: view1
+                            icon: "eye-off-outline"
+                            tooltip_text: "Toggle Password View"
+                            pos_hint: {"center_x": .5, "center_y": .5}
+                            on_release:
+                                root.password_view_su(self.icon, 1)
                     MDTextField:
                         id: SignUpPassword1
                         line_color_focus: 229/255,60/255,40/255,1
@@ -164,9 +182,17 @@ WindowManager:
                 MDCard:
                     orientation: "vertical"
                     padding: "40dp","12dp"
-                    MDLabel:
-                        text: "Confirm Password"
-                        font_size: "18dp"
+                    BoxLayout:
+                        MDLabel:
+                            text: "Confirm Password"
+                            font_size: "18dp"
+                        TooltipMDIconButton:
+                            id: view2
+                            icon: "eye-off-outline"
+                            tooltip_text: "Toggle Password View"
+                            pos_hint: {"center_x": .5, "center_y": .5}
+                            on_release:
+                                root.password_view_su(self.icon, 2)
                     MDTextField:
                         id: SignUpPassword2
                         line_color_focus: 229/255,60/255,40/255,1
@@ -191,6 +217,10 @@ WindowManager:
                     root.ids.SignUpUsername.text = ""
                     root.ids.SignUpPassword1.text = ""
                     root.ids.SignUpPassword2.text = ""
+                    root.ids.view1.icon = "eye-off-outline"
+                    root.ids.view2.icon = "eye-off-outline"
+                    root.ids.SignUpPassword1.password = True
+                    root.ids.SignUpPassword2.password = True
 
             Button:
                 text: "Already have an account? Login"
@@ -209,6 +239,10 @@ WindowManager:
                     root.ids.SignUpUsername.text = ""
                     root.ids.SignUpPassword1.text = ""
                     root.ids.SignUpPassword2.text = ""
+                    root.ids.view1.icon = "eye-off-outline"
+                    root.ids.view2.icon = "eye-off-outline"
+                    root.ids.SignUpPassword1.password = True
+                    root.ids.SignUpPassword2.password = True
 
 
 
@@ -238,7 +272,7 @@ WindowManager:
         #background_normal: ''
         ScrollView:
             #background_normal: ''
-            scroll_wheel_distance: 40
+            scroll_wheel_distance: 80
             effect_cls: 'DampedScrollEffect'
             size: self.size
             canvas.before:

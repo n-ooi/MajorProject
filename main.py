@@ -25,6 +25,7 @@ from kivymd.uix.textfield import MDTextField
 results = ""
 current_user = ""
 entryNum = ""
+pauseJSON = False
 
 with open('filekey.key', 'rb') as filekey:
     key = filekey.read()
@@ -162,6 +163,11 @@ class Calc(Screen):
 
                 i = i + 1
         encrypt('user_data.json')
+        global pauseJSON
+        pauseJSON = True
+        self.calc_values(self.ids.carCost.value, self.ids.annualDistance.value, self.ids.term1.active, self.ids.term2.active, self.ids.term3.active, self.ids.term4.active,
+                            self.ids.size1.active, self.ids.size2.active, self.ids.size3.active, self.ids.size4.active, self.ids.preTaxIncome.value, self.ids.inc1.active, self.ids.inc2.active, self.ids.inc3.active, self.ids.inc4.active)
+        pauseJSON = False
 
 
 
@@ -297,8 +303,7 @@ class Calc(Screen):
         if carCost == 0 or \
                 annualDistance == 0 or \
                 (term1 == False and term2 == False and term3 == False and term4 == False) or \
-                (size1 == False and size2 == False and size3 == False and size4 == False) or \
-                preTaxIncome == 0:
+                (size1 == False and size2 == False and size3 == False and size4 == False):
             MDDialog(text="Check selections for errors.", ).open()
             return False
         else:
@@ -345,17 +350,15 @@ class Calc(Screen):
                 roadside_assist = 0
 
             decrypt("user_data.json")
-            self.edit_json(car_cost_GST, kms_travelled_per_year, lease_term, car_size, salary_income, insurance,
-                           roadside, cleaning, servicing)
+            global pauseJSON
+            if not pauseJSON:
+                self.edit_json(car_cost_GST, kms_travelled_per_year, lease_term, car_size, salary_income, insurance,roadside, cleaning, servicing)
             encrypt("user_data.json")
 
             # NORMAL COSTS CALCULATIONS
             aP = -(car_cost_GST - (car_cost_GST * residual_value))
             ar = standard_interest_rate / 12
             an = (lease_term * 12) - 2
-
-            print("Standard PMT: " + str(np.pmt(ar, an, aP) * 12))
-
             normal_financing = np.pmt(ar, an, aP) * 12
             if insurance:
                 normal_insurance = (car_cost_GST * 0.04)
@@ -363,28 +366,30 @@ class Calc(Screen):
                 normal_insurance = 0
             normal_fees = 0
             normal_registration = 800
-            normal_fuel = (((7.6 * (kms_travelled_per_year / 100)) * 1.5) * 1.2)
+
+            print(f"This is [{car_size}]")
+            if car_size == "small True":
+                fuel_consumption = 6
+            elif car_size == "medium True":
+                fuel_consumption = 7
+            elif car_size == "large True":
+                fuel_consumption = 8
+            elif car_size == "sports True":
+                fuel_consumption = 7.6
+
+            normal_fuel = (((fuel_consumption * (kms_travelled_per_year / 100)) * 1.5) * 1.2)
             if servicing:
                 normal_maintenance = 1500
             else:
                 normal_maintenance = 0
 
-            print("Normal Financing: " + str(normal_financing))
-            print("Normal Insurance: " + str(normal_insurance))
-            print("Normal Fuel: " + str(normal_fuel))
-            print("Normal Maintenance: " + str(normal_maintenance))
-
             # NOVATED COSTS CALCULATIONS
             car_cost_GST_adjusted = car_cost_GST - (car_cost_GST / 11)
             if car_cost_GST > 69152:
                 car_cost_GST_adjusted = car_cost_GST - (69152 * .1)
-
             bP = -(car_cost_GST_adjusted - (car_cost_GST_adjusted * residual_value))
             br = novated_interest_rate / 12
             bn = (lease_term * 12) - 2
-
-            print("Novated PMT: " + str(np.pmt(br, bn, bP) * 12))
-
             novated_financing = np.pmt(br, bn, bP) * 12
             novated_insurance = normal_insurance - normal_insurance / 11
             novated_roadside = roadside_assist - roadside_assist / 11
@@ -394,61 +399,56 @@ class Calc(Screen):
             novated_fuel = (normal_fuel - normal_fuel / 11)
             novated_maintenance = normal_maintenance - normal_maintenance / 11
 
+            # NOVATED TAX/INCOME CALCULATIONS
+            novated_total = novated_roadside + novated_cleaning + novated_financing + novated_insurance + novated_fees + novated_registration + novated_fuel + novated_maintenance
+            novated_less_post_tax_deduction = (car_cost_GST * .2) * (1 - business_percentage)
+            novated_less_pre_tax_deduction = novated_total + (novated_less_post_tax_deduction / 11 - novated_less_post_tax_deduction)
+            novated_taxable_income = salary_income - novated_less_pre_tax_deduction
+            novated_less_tax = self.tax_calculate(novated_taxable_income)  # for some reason different to calculator
+            novated_net_annual_income = novated_taxable_income - novated_less_tax
+            novated_lease_final = novated_net_annual_income - novated_less_post_tax_deduction
+
+            # NORMAL TAX/INCOME CALCULATIONS
+            normal_total = roadside_assist + cleaning_cost + normal_financing + normal_insurance + normal_fees + normal_registration + normal_fuel + normal_maintenance
+            normal_less_post_tax_deduction = normal_total
+            normal_less_pre_tax_deduction = "-"
+            normal_taxable_income = salary_income
+            normal_less_tax = self.tax_calculate(normal_taxable_income)  #
+            normal_net_annual_income = normal_taxable_income - normal_less_tax
+            normal_lease_final = normal_net_annual_income - normal_less_post_tax_deduction
+
+
+            # SAVINGS
+            tax_savings = novated_lease_final - normal_lease_final
+            money_savings = tax_savings + normal_total - novated_total
+
+            print("Standard PMT: " + str(np.pmt(ar, an, aP) * 12))
+            print("Normal Financing: " + str(normal_financing))
+            print("Normal Insurance: " + str(normal_insurance))
+            print("Normal Fuel: " + str(normal_fuel))
+            print("Normal Maintenance: " + str(normal_maintenance))
+
+            print("Novated PMT: " + str(np.pmt(br, bn, bP) * 12))
             print("Novated Financing: " + str(novated_financing))
             print("Novated Insurance: " + str(novated_insurance))
             print("Novated Fuel: " + str(novated_fuel))
             print("Novated Maintenance: " + str(novated_maintenance))
 
-            # NOVATED TAX/INCOME CALCULATIONS
-            novated_total = novated_roadside + novated_cleaning + novated_financing + novated_insurance + novated_fees + novated_registration + novated_fuel + novated_maintenance
             print("\033[1;31;50m" + "Novated Total: " + str(novated_total) + "\033[0m")
-
-            novated_less_post_tax_deduction = (car_cost_GST * .2) * (1 - business_percentage)
             print("Novated Post Tax: " + str(novated_less_post_tax_deduction))
-
-            novated_less_pre_tax_deduction = novated_total + (
-                    novated_less_post_tax_deduction / 11 - novated_less_post_tax_deduction)
             print("Novated Pre Tax: " + str(novated_less_pre_tax_deduction))
-
-            novated_taxable_income = salary_income - novated_less_pre_tax_deduction
             print("Novated Taxable Income: " + str(novated_taxable_income))
-
-            novated_less_tax = self.tax_calculate(novated_taxable_income)  # for some reason different to calculator
             print("Novated Less Tax: " + str(novated_less_tax))
-
-            novated_net_annual_income = novated_taxable_income - novated_less_tax
             print("Novated Net Annual Income: " + str(novated_net_annual_income))
-
-            novated_lease_final = novated_net_annual_income - novated_less_post_tax_deduction
             print("\033[1;31;50m" + "Novated Final: " + str(novated_lease_final) + "\033[0m")
-
-            # NORMAL TAX/INCOME CALCULATIONS
-            normal_total = roadside_assist + cleaning_cost + normal_financing + normal_insurance + normal_fees + normal_registration + normal_fuel + normal_maintenance
             print("\033[1;31;50m" + "Normal Total: " + str(normal_total) + "\033[0m")
-
-            normal_less_post_tax_deduction = normal_total
             print("Normal Post Tax: " + str(normal_less_post_tax_deduction))
-
-            normal_less_pre_tax_deduction = "-"
             print("Normal Pre Tax: " + str(normal_less_pre_tax_deduction))
-
-            normal_taxable_income = salary_income
             print("Normal Taxable Income: " + str(normal_taxable_income))
-
-            normal_less_tax = self.tax_calculate(normal_taxable_income)  # for some reason different to calculator
             print("Normal Less Tax: " + str(normal_less_tax))
-
-            normal_net_annual_income = normal_taxable_income - normal_less_tax
             print("Normal Net Annual Income: " + str(normal_net_annual_income))
-
-            normal_lease_final = normal_net_annual_income - normal_less_post_tax_deduction
             print("\033[1;31;50m" + "Normal Final: " + str(normal_lease_final) + "\033[0m")
-
-            # SAVINGS
-            tax_savings = novated_lease_final - normal_lease_final
             print("\033[1;33;50m" + "Tax Savings: " + str(tax_savings) + "\033[0m")
-
-            money_savings = tax_savings + normal_total - novated_total
             print("\033[1;33;50m" + "Money Savings: " + str(money_savings) + "\033[0m")
 
             label1 = Label(color="black", text=f"\n\nWithout Novated Lease: \n " + \
@@ -497,6 +497,14 @@ class Login(Screen):
     def on_enter(self):
         pass
 
+    def password_view(self, passIcon):
+        if passIcon == 'eye-off-outline':
+            self.ids.LoginPassword.password = False
+            self.ids.view.icon = "eye-outline"
+        else:
+            self.ids.LoginPassword.password = True
+            self.ids.view.icon = "eye-off-outline"
+
     def login_validation(self, LoginUsername, LoginPassword, root):
         decrypt('login-details.csv')
         check = pd.read_csv('login-details.csv')
@@ -524,6 +532,22 @@ class Login(Screen):
 class SignUp(Screen):
     def on_enter(self):
         pass
+
+    def password_view_su(self, passIcon, num):
+        if num == 1:
+            if passIcon == 'eye-off-outline':
+                self.ids.SignUpPassword1.password = False
+                self.ids.view1.icon = "eye-outline"
+            else:
+                self.ids.SignUpPassword1.password = True
+                self.ids.view1.icon = "eye-off-outline"
+        elif num == 2:
+            if passIcon == 'eye-off-outline':
+                self.ids.SignUpPassword2.password = False
+                self.ids.view2.icon = "eye-outline"
+            else:
+                self.ids.SignUpPassword2.password = True
+                self.ids.view2.icon = "eye-off-outline"
 
     def signupbtn(self, SignUpUsername, SignUpPassword1, SignUpPassword2, root):
         # creating a DataFrame of the info
@@ -576,28 +600,30 @@ class Manager(Screen):
                     inc2 = entry["roadside"]
                     inc3 = entry["cleaning"]
                     inc4 = entry["servicing"]
-                    data_stuff.append([i + 1, time, username, car_cost, distance_travelled, lease_term,
+                    data_stuff.insert(0,[i + 1, time, username, car_cost, distance_travelled, lease_term,
                                        car_size.replace(' True', '').replace(' False', ''), salary_income, inc1, inc2, inc3,
                                        inc4])
                     i = i + 1
 
             manager_data = BoxLayout(
                 orientation='vertical',
-                padding='30dp'
+                padding="20dp",
+                spacing="20dp"
             )
 
             search_field = MDTextField(
                 hint_text='Search',
                 on_text_validate=self.update_data,
-                size_hint_y=0.1
+                size_hint_y=0.1,
             )
 
             toolbar = BoxLayout(
                 orientation='horizontal',
-                size_hint_y=.2
+                size_hint_y=.2,
             )
 
-            toolbar.add_widget(Button(text="Home", on_release=self.return_to_calc))
+            toolbar.add_widget(Button(text="Return Home You Loser!", on_release=self.return_to_calc, background_color=(229/255,60/255,40/255,1),
+                                      background_normal="off", font_name="font.otf", bold=True, font_size="50dp"))
 
             manager_data.add_widget(toolbar)
             manager_data.add_widget(search_field)
@@ -605,19 +631,20 @@ class Manager(Screen):
             self.data_tables = MDDataTable(
                 use_pagination=True,
                 pagination_menu_pos='center',
+                rows_num=10,
                 column_data=[
-                    ("No.", dp(30)),
-                    ("Time", dp(30)),
+                    ("ID", dp(10)),
+                    ("Time/Date", dp(40)),
                     ("Username", dp(30)),
-                    ("Car Cost", dp(30)),
-                    ("Annual Distance", dp(30)),
-                    ("Lease Term", dp(30)),
-                    ("Car Size", dp(30)),
-                    ("Salary/Income", dp(30)),
-                    ("Insurance", dp(30)),
-                    ("Roadside A", dp(30)),
-                    ("Cleaning", dp(30)),
-                    ("Servicing", dp(30))
+                    ("Car Cost", dp(20)),
+                    ("Annual Distance", dp(20)),
+                    ("Lease Term", dp(10)),
+                    ("Car Size", dp(20)),
+                    ("Salary/Income", dp(25)),
+                    ("Insurance", dp(20)),
+                    ("Roadside Assist", dp(20)),
+                    ("Cleaning", dp(20)),
+                    ("Servicing", dp(20))
                 ],
                 row_data=data_stuff
             )
