@@ -367,7 +367,7 @@ class Calc(Screen):
             normal_fees = 0
             normal_registration = 800
 
-            print(f"This is [{car_size}]")
+            # REAL
             if car_size == "small True":
                 fuel_consumption = 6
             elif car_size == "medium True":
