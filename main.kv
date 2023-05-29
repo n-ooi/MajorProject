@@ -9,7 +9,9 @@ WindowManager:
 <Login>:
     name: "login"
     FloatLayout:
-
+        TooltipMDIconButton:
+            icon: "help-circle-outline"
+            tooltip_text: "After signing up, use this page to login with your username and password. \nIf you don't have account, switch to the Signup screen to create one."
     MDBoxLayout:
         orientation: "horizontal"
         BoxLayout:
@@ -38,7 +40,7 @@ WindowManager:
                             font_size: "18dp"
                         TooltipMDIconButton:
                             icon: "account-circle-outline"
-                            tooltip_text: ""
+                            tooltip_text: "Type your username here"
                             pos_hint: {"center_x": .5, "center_y": .5}
                     MDTextField:
                         id: LoginUsername
@@ -88,7 +90,7 @@ WindowManager:
                     root.ids.LoginUsername.text = ""
                     root.ids.LoginPassword.text = ""
                     root.ids.view.icon = "eye-off-outline"
-                    root.ids.LoginPassword.password = ""
+                    root.ids.LoginPassword.password = True
 
             Button:
                 text: "Haven't got an account? Sign Up"
@@ -106,7 +108,7 @@ WindowManager:
                     root.ids.LoginUsername.text = ""
                     root.ids.LoginPassword.text = ""
                     root.ids.view.icon = "eye-off-outline"
-                    root.ids.LoginPassword.password = ""
+                    root.ids.LoginPassword.password = True
 
 
         BoxLayout:
@@ -122,6 +124,10 @@ WindowManager:
 
 <SignUp>:
     name: "signup"
+    FloatLayout:
+        TooltipMDIconButton:
+            icon: "help-circle-outline"
+            tooltip_text: "Use this page to create an account,\nif you already have an account switch to the Login screen to log in"
     MDBoxLayout:
         orientation: "horizontal"
         BoxLayout:
@@ -144,9 +150,14 @@ WindowManager:
                     orientation: "vertical"
                     padding: "40dp","12dp"
                     height: root.height*0.08
-                    MDLabel:
-                        text: "Username"
-                        font_size: "18dp"
+                    BoxLayout:
+                        MDLabel:
+                            text: "Username"
+                            font_size: "18dp"
+                        TooltipMDIconButton:
+                            icon: "account-circle-outline"
+                            tooltip_text: "Type your username here."
+                            pos_hint: {"center_x": .5, "center_y": .5}
                     MDTextField:
                         id: SignUpUsername
                         line_color_focus: 229/255,60/255,40/255,1
@@ -279,6 +290,7 @@ WindowManager:
                     rgb: 229/255,60/255,40/255,1
                 Rectangle:
                     size: self.size
+
             GridLayout:
                 size_hint_y: None
                 cols: 1
@@ -288,11 +300,12 @@ WindowManager:
                 width: self.minimum_width
 
 ##########################################################################################################
+
                 BoxLayout:
-                    padding: "150dp","20dp"
+                    padding: "50dp","20dp"
                     orientation: "horizontal"
                     Label:
-                        size_hint: .9,1
+                        size_hint: .6,1
                         text: "Novated Lease"
                         font_name: "font.otf"
                         bold: True
@@ -318,13 +331,37 @@ WindowManager:
                             root.manager_screen()
 
                     Label:
+                        size_hint: 0.5,1
 
                     Button:
-                        text: "Login and Sign Up"
+                        text: "Help"
                         font_name: "font.otf"
                         bold: True
                         font_size: "25dp"
-                        size_hint: .75,None
+                        size_hint: .15,None
+                        pos_hint: {"center_y": 0.1}
+                        height: "50dp"
+                        background_color: (0,0,0,0)
+                        background_normal: ""
+                        canvas.before:
+                            Color:
+                                rgba: 1,1,1,.2
+                            RoundedRectangle:
+                                size: self.size
+                                pos: self.pos
+                                radius: [50]
+                        on_release:
+                            root.help_popup()
+
+                    Label:
+                        size_hint: 0.05,1
+
+                    Button:
+                        text: "Log Out"
+                        font_name: "font.otf"
+                        bold: True
+                        font_size: "25dp"
+                        size_hint: .30,None
                         pos_hint: {"center_y": 0.1}
                         height: "50dp"
                         background_color: (0,0,0,0)
@@ -375,8 +412,15 @@ WindowManager:
 
                     CalculatorCategory: # Car Cost
                         height: "250dp"
-                        Title2:
-                            text: "Car Cost (inc GST)"
+                        BoxLayout:
+                            size_hint: 0.4,1
+                            pos_hint: {"center_x": .5}
+                            Title2:
+                                text: "Car Cost"
+                            TooltipMDIconButton:
+                                icon: "help-circle-outline"
+                                tooltip_text: "Select the approximate value of the car you're purchasing (including GST)"
+                                pos_hint: {"center_x": .5, "center_y": .5}
                         MDSlider:
                             hint: False
                             color: 229/255,60/255,40/255,1
@@ -390,8 +434,15 @@ WindowManager:
 
                     CalculatorCategory: # Annual Distance Travelled
                         height: "250dp"
-                        Title2:
-                            text: "Annual Distance Travelled"
+                        BoxLayout:
+                            size_hint: 0.65,1
+                            pos_hint: {"center_x": .5}
+                            Title2:
+                                text: "Annual Distance"
+                            TooltipMDIconButton:
+                                icon: "help-circle-outline"
+                                tooltip_text: "Select the approximate distance (in km) you travel by car each year"
+                                pos_hint: {"center_x": .5, "center_y": .5}
                         MDSlider:
                             hint: False
                             color: 229/255,60/255,40/255,1
@@ -410,9 +461,15 @@ WindowManager:
 
                     CalculatorCategory: # Term (length of lease)
                         height: "250dp"
-                        Title2:
-                            text: "Term (length of lease [months])"
-                            id: termLength
+                        BoxLayout:
+                            size_hint: 0.55,1
+                            pos_hint: {"center_x": .5}
+                            Title2:
+                                text: "Term Length"
+                            TooltipMDIconButton:
+                                icon: "help-circle-outline"
+                                tooltip_text: "Select your desired term length for the lease"
+                                pos_hint: {"center_x": .5, "center_y": .5}
                         GridLayout:
                             cols: 4
                             Check:
@@ -446,9 +503,15 @@ WindowManager:
 
                     CalculatorCategory: # Car Size
                         height: "250dp"
-                        Title2:
-                            text: "Car Size (for fuel calculations)"
-                            id: carSize
+                        BoxLayout:
+                            size_hint: 0.4,1
+                            pos_hint: {"center_x": .5}
+                            Title2:
+                                text: "Car Size"
+                            TooltipMDIconButton:
+                                icon: "help-circle-outline"
+                                tooltip_text: "Select the size of your desired car \n(this is used for fuel calculations)"
+                                pos_hint: {"center_x": .5, "center_y": .5}
 
                         GridLayout:
                             cols: 4
@@ -484,8 +547,15 @@ WindowManager:
                 CalculatorCategory: # Pre-tax income
                     height: "250dp"
                     size_hint: 1, None
-                    Title2:
-                        text: "Pre-tax income"
+                    BoxLayout:
+                        size_hint: 0.15,1
+                        pos_hint: {"center_x": .5}
+                        Title2:
+                            text: "Income"
+                        TooltipMDIconButton:
+                            icon: "help-circle-outline"
+                            tooltip_text: "Select your yearly salary (prior to tax)"
+                            pos_hint: {"center_x": .5, "center_y": .5}
                     MDSlider:
                         hint: True
                         color: 229/255,60/255,40/255,1
@@ -501,13 +571,19 @@ WindowManager:
 
                 BoxLayout:
                     size_hint: 1,None
-                    height: "250dp"
+                    height: "300dp"
                     spacing: "40dp"
                     CalculatorCategory: # Incidental
-                        height: "250dp"
+                        height: "300dp"
                         size_hint: 1, None
-                        Title2:
-                            text: "Insurance"
+                        BoxLayout:
+                            orientation: "vertical"
+                            Title2:
+                                text: "Insurance"
+                            TooltipMDIconButton:
+                                icon: "help-circle-outline"
+                                tooltip_text: "Select this option if you would like\ninsurance costs to be included in the lease"
+                                pos_hint: {"center_x": .5, "center_y": .5}
                         Image:
                             source: "incidentals/insurance.png"
                         Check:
@@ -516,10 +592,16 @@ WindowManager:
                                 print("insurance", self.active)
 
                     CalculatorCategory: # Incidental
-                        height: "250dp"
+                        height: "300dp"
                         size_hint: 1, None
-                        Title2:
-                            text: "Roadside Assist"
+                        BoxLayout:
+                            orientation: "vertical"
+                            Title2:
+                                text: "Roadside Assist"
+                            TooltipMDIconButton:
+                                icon: "help-circle-outline"
+                                tooltip_text: "Select this option if you would like\nroadside assistance costs to be included in the lease"
+                                pos_hint: {"center_x": .5, "center_y": .5}
                         Image:
                             source: "incidentals/roadside.webp"
                         Check:
@@ -528,22 +610,34 @@ WindowManager:
                                 print("roadside_assist", self.active)
 
                     CalculatorCategory: # Incidental
-                        height: "250dp"
+                        height: "300dp"
                         size_hint: 1, None
-                        Title2:
-                            text: "Cleaning / Car Wash"
+                        BoxLayout:
+                            orientation: "vertical"
+                            Title2:
+                                text: "Tyres"
+                            TooltipMDIconButton:
+                                icon: "help-circle-outline"
+                                tooltip_text: "Select this option if you would like\ntyre costs to be included in the lease"
+                                pos_hint: {"center_x": .5, "center_y": .5}
                         Image:
                             source: "incidentals/cleaning.png"
                         Check:
                             id: inc3
                             on_release:
-                                print("cleaning", self.active)
+                                print("Tyre", self.active)
 
                     CalculatorCategory: # Incidental
-                        height: "250dp"
+                        height: "300dp"
                         size_hint: 1, None
-                        Title2:
-                            text: "Servicing"
+                        BoxLayout:
+                            orientation: "vertical"
+                            Title2:
+                                text: "Servicing"
+                            TooltipMDIconButton:
+                                icon: "help-circle-outline"
+                                tooltip_text: "Select this option if you would like\nservicing costs to be included in the lease"
+                                pos_hint: {"center_x": .5, "center_y": .5}
                         Image:
                             source: "incidentals/servicing.png"
                         Check:
@@ -552,19 +646,20 @@ WindowManager:
                                 print("servicing", self.active)
 
                 CalculatorCategory:
-                    md_bg_color: 229/255,60/255,40/255,1
+                    md_bg_color: 229/255,60/255,40/255,.7
                     height: "250dp"
                     size_hint: 1, None
                     Button:
                         text: "CALCULATE"
                         font_name: "font.otf"
+                        color: 0,0,0,1
                         bold: True
                         font_size: "50dp"
                         background_color: (0,0,0,0)
                         background_normal: ""
                         canvas.before:
                             Color:
-                                rgba: 1,1,1,.2
+                                rgba: 1,1,1,1
                             RoundedRectangle:
                                 size: self.size
                                 pos: self.pos

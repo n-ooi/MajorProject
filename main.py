@@ -5,6 +5,7 @@ import numpy_financial as np
 import pandas as pd
 from cryptography.fernet import Fernet
 from kivy.core.window import Window
+from kivy.graphics import Color
 from kivy.metrics import dp
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
@@ -115,7 +116,7 @@ class Calc(Screen):
                 salary_income = entry["salary"]
                 inc1 = entry["insurance"]
                 inc2 = entry["roadside"]
-                inc3 = entry["cleaning"]
+                inc3 = entry["tyres"]
                 inc4 = entry["servicing"]
 
                 if username == current_user:
@@ -251,7 +252,7 @@ class Calc(Screen):
                     salary_income = entry["salary"]
                     insurance = entry["insurance"]
                     roadside = entry["roadside"]
-                    cleaning = entry["cleaning"]
+                    tyres = entry["tyres"]
                     servicing = entry["servicing"]
 
                     print(f"Index Number {i}")
@@ -277,7 +278,7 @@ class Calc(Screen):
             item_data["salary"] = salary
             item_data["insurance"] = inc1
             item_data["roadside"] = inc2
-            item_data["cleaning"] = inc3
+            item_data["tyres"] = inc3
             item_data["servicing"] = inc4
             temp.append(item_data)
             with open(filename, "w") as f:
@@ -298,7 +299,7 @@ class Calc(Screen):
             add_data()
 
     def entry_valid(self, carCost, annualDistance, term1, term2, term3, term4, size1, size2, size3, size4,
-                    preTaxIncome, insurance, roadside, cleaning, servicing):
+                    preTaxIncome, insurance, roadside, tyres, servicing):
         print("checking validity...")
         if carCost == 0 or \
                 annualDistance == 0 or \
@@ -310,9 +311,9 @@ class Calc(Screen):
             return True
 
     def calc_values(self, carCost, annualDistance, term1, term2, term3, term4, size1, size2, size3, size4,
-                    preTaxIncome, insurance, roadside, cleaning, servicing):
+                    preTaxIncome, insurance, roadside, tyres, servicing):
         if self.entry_valid(carCost, annualDistance, term1, term2, term3, term4, size1, size2, size3, size4,
-                            preTaxIncome, insurance, roadside, cleaning, servicing):
+                            preTaxIncome, insurance, roadside, tyres, servicing):
             term = 0
             print('\n\n' + "Car Cost: " + str(int(carCost)))
             print("Distance: " + str(annualDistance))
@@ -339,10 +340,10 @@ class Calc(Screen):
             standard_interest_rate = 0.03  # if there is time make this editable
             monthly_fee = 20  # if there is time make this editable
 
-            if cleaning:
-                cleaning_cost = 500
+            if tyres:
+                tyres_cost = 500
             else:
-                cleaning_cost = 0
+                tyres_cost = 0
 
             if roadside:
                 roadside_assist = 500
@@ -352,7 +353,7 @@ class Calc(Screen):
             decrypt("user_data.json")
             global pauseJSON
             if not pauseJSON:
-                self.edit_json(car_cost_GST, kms_travelled_per_year, lease_term, car_size, salary_income, insurance,roadside, cleaning, servicing)
+                self.edit_json(car_cost_GST, kms_travelled_per_year, lease_term, car_size, salary_income, insurance,roadside, tyres, servicing)
             encrypt("user_data.json")
 
             # NORMAL COSTS CALCULATIONS
@@ -393,14 +394,14 @@ class Calc(Screen):
             novated_financing = np.pmt(br, bn, bP) * 12
             novated_insurance = normal_insurance - normal_insurance / 11
             novated_roadside = roadside_assist - roadside_assist / 11
-            novated_cleaning = cleaning_cost - cleaning_cost / 11
+            novated_tyres = tyres_cost - tyres_cost / 11
             novated_fees = 12 * monthly_fee
             novated_registration = normal_registration
             novated_fuel = (normal_fuel - normal_fuel / 11)
             novated_maintenance = normal_maintenance - normal_maintenance / 11
 
             # NOVATED TAX/INCOME CALCULATIONS
-            novated_total = novated_roadside + novated_cleaning + novated_financing + novated_insurance + novated_fees + novated_registration + novated_fuel + novated_maintenance
+            novated_total = novated_roadside + novated_tyres + novated_financing + novated_insurance + novated_fees + novated_registration + novated_fuel + novated_maintenance
             novated_less_post_tax_deduction = (car_cost_GST * .2) * (1 - business_percentage)
             novated_less_pre_tax_deduction = novated_total + (novated_less_post_tax_deduction / 11 - novated_less_post_tax_deduction)
             novated_taxable_income = salary_income - novated_less_pre_tax_deduction
@@ -409,7 +410,7 @@ class Calc(Screen):
             novated_lease_final = novated_net_annual_income - novated_less_post_tax_deduction
 
             # NORMAL TAX/INCOME CALCULATIONS
-            normal_total = roadside_assist + cleaning_cost + normal_financing + normal_insurance + normal_fees + normal_registration + normal_fuel + normal_maintenance
+            normal_total = roadside_assist + tyres_cost + normal_financing + normal_insurance + normal_fees + normal_registration + normal_fuel + normal_maintenance
             normal_less_post_tax_deduction = normal_total
             normal_less_pre_tax_deduction = "-"
             normal_taxable_income = salary_income
@@ -420,6 +421,8 @@ class Calc(Screen):
 
             # SAVINGS
             tax_savings = novated_lease_final - normal_lease_final
+            if tax_savings < 0:
+                tax_savings = 0
             money_savings = tax_savings + normal_total - novated_total
 
             print("Standard PMT: " + str(np.pmt(ar, an, aP) * 12))
@@ -458,7 +461,7 @@ class Calc(Screen):
                                                f"Fuel: ${round(normal_fuel, 2)} \n" + \
                                                f"Maintenance/Servicing: ${round(normal_maintenance, 2)} \n" + \
                                                f"Insurance: ${round(normal_insurance, 2)} \n" + \
-                                               f"Cleaning: ${round(cleaning_cost, 2)} \n" + \
+                                               f"Tyres: ${round(tyres_cost, 2)} \n" + \
                                                f"Roadside Assist: ${round(roadside_assist, 2)} \n" + \
                                                f"Fees: N/A \n" + \
                                                f"------------------------------ \n" + \
@@ -471,7 +474,7 @@ class Calc(Screen):
                                                f"Fuel: ${round(novated_fuel, 2)} \n" + \
                                                f"Maintenance/Servicing: ${round(novated_maintenance, 2)} \n" + \
                                                f"Insurance: ${round(novated_insurance, 2)} \n" + \
-                                               f"Cleaning: ${round(novated_cleaning, 2)} \n" + \
+                                               f"Tyres: ${round(novated_tyres, 2)} \n" + \
                                                f"Roadside Assist: ${round(novated_roadside, 2)} \n" + \
                                                f"Fees: ${round(novated_fees, 2)} \n" + \
                                                f"------------------------------ \n" + \
@@ -480,7 +483,7 @@ class Calc(Screen):
             label3 = Label(color="black", text=f"Totals: \n " + \
                                                f"------------------------------ \n" + \
                                                f"Tax Savings: $" + str(round(tax_savings, 2)) + \
-                                               f"\nYearly Payment: $" + str(round(novated_total, 2)) + \
+                                               f"\nFortnightly Payment: $" + str(round(novated_total / 26 , 2)) + \
                                                f"\nMonthly Payment: $" + str(round(novated_total / 12, 2)))
 
             content = Content()
@@ -491,7 +494,9 @@ class Calc(Screen):
             window.open()
 
         # MDApp.get_running_app().switch_screen("results")
-
+    def help_popup(self):
+        window = MDDialog(title="Help", text="Using the slider and checkboxes below, \nselect the specifications of your novated lease.\nOnce you are done press 'CALCULATE' to recieve your results. \n\nIf you want to look back on any of your previous submissions, \npress the 'History' button' to load any of your previous entries. \n\nIf you would like to logout, switch account, etc.\nuse the 'Log Out' button to do so. ")
+        window.open()
 
 class Login(Screen):
     def on_enter(self):
@@ -598,7 +603,7 @@ class Manager(Screen):
                     salary_income = entry["salary"]
                     inc1 = entry["insurance"]
                     inc2 = entry["roadside"]
-                    inc3 = entry["cleaning"]
+                    inc3 = entry["tyres"]
                     inc4 = entry["servicing"]
                     data_stuff.insert(0,[i + 1, time, username, car_cost, distance_travelled, lease_term,
                                        car_size.replace(' True', '').replace(' False', ''), salary_income, inc1, inc2, inc3,
@@ -620,10 +625,13 @@ class Manager(Screen):
             toolbar = BoxLayout(
                 orientation='horizontal',
                 size_hint_y=.2,
+                spacing="20dp"
             )
 
-            toolbar.add_widget(Button(text="Return Home You Loser!", on_release=self.return_to_calc, background_color=(229/255,60/255,40/255,1),
-                                      background_normal="off", font_name="font.otf", bold=True, font_size="50dp"))
+            toolbar.add_widget(Button(text="Welcome Admin",font_name="font.otf", bold=True, font_size="50dp",background_color=(229/255,60/255,40/255,1),
+                                      background_normal="off"))
+            toolbar.add_widget(Button(text="Return Home", on_release=self.return_to_calc, background_color=(229/255,60/255,40/255,1),
+                                      background_normal="off", font_name="font.otf", bold=True, font_size="30dp", size_hint=(0.3,1)))
 
             manager_data.add_widget(toolbar)
             manager_data.add_widget(search_field)
@@ -643,7 +651,7 @@ class Manager(Screen):
                     ("Salary/Income", dp(25)),
                     ("Insurance", dp(20)),
                     ("Roadside Assist", dp(20)),
-                    ("Cleaning", dp(20)),
+                    ("Tyres", dp(20)),
                     ("Servicing", dp(20))
                 ],
                 row_data=data_stuff
