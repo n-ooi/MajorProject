@@ -28,16 +28,14 @@ current_user = ""
 entryNum = ""
 pauseJSON = False
 
-with open('filekey.key', 'rb') as filekey:
+with open('filekey.key', 'rb') as filekey:  # retrieves the decryption key from my file
     key = filekey.read()
 
 fernet = Fernet(key)
 
-file_name = 'data.json'
-
 
 # noinspection PyShadowingNames
-def decrypt(file_name):
+def decrypt(file_name):  # Decryption Function: uses Fernet key to decrypt file
     with open(file_name, 'rb') as enc_file:
         encrypted = enc_file.read()
 
@@ -48,7 +46,7 @@ def decrypt(file_name):
 
 
 # noinspection PyShadowingNames
-def encrypt(file_name):
+def encrypt(file_name):  # Encryption Function: uses Fernet to encrypt file
     with open(file_name, 'rb') as file:
         original = file.read()
 
@@ -58,6 +56,7 @@ def encrypt(file_name):
         encrypted_file.write(encrypted)
 
 
+# This checks if the files are decrypted at startup and immediately encrypts them if not
 with open('login-details.csv', 'r') as f:
     if f.read()[0:8] == 'Username':
         encrypt('login-details.csv')
@@ -67,10 +66,11 @@ with open('user_data.json', 'r') as f:
         encrypt('user_data.json')
 
 
-class Content(GridLayout):
+class Content(GridLayout):  # Defines Content as a GridLayout so I can add widgets to it later on
     pass
 
-class ItemConfirm(OneLineAvatarIconListItem):
+
+class ItemConfirm(OneLineAvatarIconListItem):  # This class defines a list item in the history selection dialog
     divider = None
 
     def set_icon(self, instance_check):
@@ -80,34 +80,25 @@ class ItemConfirm(OneLineAvatarIconListItem):
             if check != instance_check:
                 check.active = False
 
-        print(f"Selected {self.ids._lbl_primary.text}")
         global entryNum
         entryNum = int((self.ids._lbl_primary.text).split()[-1])
 
 
-class SelectionButton(MDFlatButton):
-    def test_fn(self):
-        MDApp.get_running_app().switch_screen("Calc")
-
-
-class Calc(Screen):
+class Calc(Screen):  # This is the class that defines my main calculator screen
     def on_enter(self):
-        print("Calc Page Loaded...")
-        filename = "user_data.json"
+        pass
 
-
-    def update_entry(self, x):
+    def update_entry(self, x):  # this function loads past entries after a user selects it in the history dialog
         global entryNum
         global current_user
-        print(f"searching for {current_user} - {entryNum}")
         filename = 'user_data.json'
         decrypt(filename)
-        with open(filename, "r") as f:
+        with open(filename, "r") as f:  # opens my json file which stores all of the user's data
             temp = json.load(f)
             i = 0
             entryIndex = 0
 
-            for entry in temp:
+            for entry in temp:  # goes through each entry in the json and sets variables to store each value
                 username = entry["username"]
                 car_cost = entry["cost"]
                 distance_travelled = entry["distance"]
@@ -119,17 +110,9 @@ class Calc(Screen):
                 inc3 = entry["tyres"]
                 inc4 = entry["servicing"]
 
-                if username == current_user:
-                    entryIndex = entryIndex + 1
-                    if entryIndex == entryNum:
-                        print(f"{current_user}'s {entryNum}th entry:")
-                        print(f"Username: {username}")
-                        print(f"Cost: {car_cost}")
-                        print(f"Distance: {distance_travelled}")
-                        print(f"Term: {lease_term}")
-                        print(f"Size: {car_size}")
-                        print(f"Salary: {salary_income}")
-
+                if username == current_user:  # search for logged-in user is found
+                    entryIndex = entryIndex + 1  # increments entryIndex until it finds the number entry that has been selected
+                    if entryIndex == entryNum:  # once found it updates the calculator with the found user's data
                         self.ids.carCost.value = car_cost
                         self.ids.annualDistance.value = distance_travelled
                         self.ids.preTaxIncome.value = salary_income
@@ -166,43 +149,44 @@ class Calc(Screen):
         encrypt('user_data.json')
         global pauseJSON
         pauseJSON = True
-        self.calc_values(self.ids.carCost.value, self.ids.annualDistance.value, self.ids.term1.active, self.ids.term2.active, self.ids.term3.active, self.ids.term4.active,
-                            self.ids.size1.active, self.ids.size2.active, self.ids.size3.active, self.ids.size4.active, self.ids.preTaxIncome.value, self.ids.inc1.active, self.ids.inc2.active, self.ids.inc3.active, self.ids.inc4.active)
+        self.calc_values(self.ids.carCost.value, self.ids.annualDistance.value, self.ids.term1.active,
+                         self.ids.term2.active, self.ids.term3.active, self.ids.term4.active,
+                         self.ids.size1.active, self.ids.size2.active, self.ids.size3.active, self.ids.size4.active,
+                         self.ids.preTaxIncome.value, self.ids.inc1.active, self.ids.inc2.active, self.ids.inc3.active,
+                         self.ids.inc4.active)  # Runs my function to calculate and display results
         pauseJSON = False
 
-
-
-    def manager_screen(self):
-
+    def results_screen(self): # this function opens my results dialog box
         filename = "user_data.json"
         decrypt(filename)
 
         stuff = []
 
-        with open(filename, "r") as f:
+        with open(filename, "r") as f:  # Opens my JSON file
             temp = json.load(f)
             entryIndex = 0
-            for entry in temp:
+            for entry in temp: # loads each entry into an array for the data table
                 username = entry["username"]
                 time = entry["time"]
                 if username == current_user:
                     entryIndex = entryIndex + 1
                     stuff.insert(0, ItemConfirm(text=f"{time} - Submission {entryIndex}"))
 
+        # This defines the window that pops up when displaying results
         window = MDDialog(
             title="Past Entries",
             type="confirmation",
             items=stuff,
             buttons=[
-                SelectionButton(
-                    text="SELECT", on_release=self.update_entry
+                MDFlatButton(
+                    text="SELECT", on_release=self.update_entry  # when pressing select it runs a function
                 ),
             ],
         )
         window.open()
         encrypt(filename)
 
-    def tax_calculate(self, taxable_income):
+    def tax_calculate(self, taxable_income):  # this function calculates the tax savings based on the user's taxable income
         tax = 0
         if 0 < taxable_income <= 18200:
             tax = 0
@@ -233,7 +217,7 @@ class Calc(Screen):
         # return TAX values
         return tax
 
-    def edit_json(self, cost, distance, term, size, salary, inc1, inc2, inc3, inc4):
+    def edit_json(self, cost, distance, term, size, salary, inc1, inc2, inc3, inc4):  # this function adds user submissions to the JSON file
         filename = "user_data.json"
         print("json editing...")
 
@@ -353,7 +337,8 @@ class Calc(Screen):
             decrypt("user_data.json")
             global pauseJSON
             if not pauseJSON:
-                self.edit_json(car_cost_GST, kms_travelled_per_year, lease_term, car_size, salary_income, insurance,roadside, tyres, servicing)
+                self.edit_json(car_cost_GST, kms_travelled_per_year, lease_term, car_size, salary_income, insurance,
+                               roadside, tyres, servicing)
             encrypt("user_data.json")
 
             # NORMAL COSTS CALCULATIONS
@@ -403,7 +388,8 @@ class Calc(Screen):
             # NOVATED TAX/INCOME CALCULATIONS
             novated_total = novated_roadside + novated_tyres + novated_financing + novated_insurance + novated_fees + novated_registration + novated_fuel + novated_maintenance
             novated_less_post_tax_deduction = (car_cost_GST * .2) * (1 - business_percentage)
-            novated_less_pre_tax_deduction = novated_total + (novated_less_post_tax_deduction / 11 - novated_less_post_tax_deduction)
+            novated_less_pre_tax_deduction = novated_total + (
+                    novated_less_post_tax_deduction / 11 - novated_less_post_tax_deduction)
             novated_taxable_income = salary_income - novated_less_pre_tax_deduction
             novated_less_tax = self.tax_calculate(novated_taxable_income)  # for some reason different to calculator
             novated_net_annual_income = novated_taxable_income - novated_less_tax
@@ -417,7 +403,6 @@ class Calc(Screen):
             normal_less_tax = self.tax_calculate(normal_taxable_income)  #
             normal_net_annual_income = normal_taxable_income - normal_less_tax
             normal_lease_final = normal_net_annual_income - normal_less_post_tax_deduction
-
 
             # SAVINGS
             tax_savings = novated_lease_final - normal_lease_final
@@ -483,7 +468,7 @@ class Calc(Screen):
             label3 = Label(color="black", text=f"Totals: \n " + \
                                                f"------------------------------ \n" + \
                                                f"Tax Savings: $" + str(round(tax_savings, 2)) + \
-                                               f"\nFortnightly Payment: $" + str(round(novated_total / 26 , 2)) + \
+                                               f"\nFortnightly Payment: $" + str(round(novated_total / 26, 2)) + \
                                                f"\nMonthly Payment: $" + str(round(novated_total / 12, 2)))
 
             content = Content()
@@ -493,10 +478,12 @@ class Calc(Screen):
             content.add_widget(label3)
             window.open()
 
-        # MDApp.get_running_app().switch_screen("results")
+
     def help_popup(self):
-        window = MDDialog(title="Help", text="Using the slider and checkboxes below, \nselect the specifications of your novated lease.\nOnce you are done press 'CALCULATE' to recieve your results. \n\nIf you want to look back on any of your previous submissions, \npress the 'History' button' to load any of your previous entries. \n\nIf you would like to logout, switch account, etc.\nuse the 'Log Out' button to do so. ")
+        window = MDDialog(title="Help",
+                          text="Using the slider and checkboxes below, \nselect the specifications of your novated lease.\nOnce you are done press 'CALCULATE' to recieve your results. \n\nIf you want to look back on any of your previous submissions, \npress the 'History' button' to load any of your previous entries. \n\nIf you would like to logout, switch account, etc.\nuse the 'Log Out' button to do so. ")
         window.open()
+
 
 class Login(Screen):
     def on_enter(self):
@@ -522,7 +509,7 @@ class Login(Screen):
             user_password = user_info['Password'].values[0]
             if LoginPassword == user_password:
                 if LoginUsername == 'admin':
-                        MDApp.get_running_app().switch_screen("manager")
+                    MDApp.get_running_app().switch_screen("manager")
                 else:
                     MDApp.get_running_app().switch_screen("Calc")
                 print("Password Correct")
@@ -568,7 +555,8 @@ class SignUp(Screen):
                 if SignUpUsername and SignUpPassword1:
                     if SignUpUsername not in users['Username'].unique():
                         # if Username does not exist already then append to the csv file
-                        MDApp.get_running_app().switch_screen("login")  # to change current screen to log in the user now
+                        MDApp.get_running_app().switch_screen(
+                            "login")  # to change current screen to log in the user now
                         user.to_csv('login-details.csv', mode='a', header=False, index=False)
                     else:
                         MDDialog(text="Username Taken.", ).open()
@@ -577,6 +565,7 @@ class SignUp(Screen):
             else:
                 MDDialog(text="Username must be alphanumeric.", ).open()
         encrypt('login-details.csv')
+
 
 data_stuff = []
 
@@ -605,10 +594,11 @@ class Manager(Screen):
                     inc2 = entry["roadside"]
                     inc3 = entry["tyres"]
                     inc4 = entry["servicing"]
-                    data_stuff.insert(0,[i + 1, time, username, car_cost, distance_travelled, lease_term,
-                                       car_size.replace(' True', '').replace(' False', ''), salary_income, inc1, inc2, inc3,
-                                       inc4])
-                    i = i + 1
+                    data_stuff.insert(0, [i + 1, time, username, car_cost, distance_travelled, lease_term,
+                                          car_size.replace(' True', '').replace(' False', ''), salary_income, inc1,
+                                          inc2, inc3,
+                                          inc4])
+                    i += 1
 
             manager_data = BoxLayout(
                 orientation='vertical',
@@ -628,10 +618,13 @@ class Manager(Screen):
                 spacing="20dp"
             )
 
-            toolbar.add_widget(Button(text="Welcome Admin",font_name="font.otf", bold=True, font_size="50dp",background_color=(229/255,60/255,40/255,1),
+            toolbar.add_widget(Button(text="Welcome Admin", font_name="font.otf", bold=True, font_size="50dp",
+                                      background_color=(229 / 255, 60 / 255, 40 / 255, 1),
                                       background_normal="off"))
-            toolbar.add_widget(Button(text="Return Home", on_release=self.return_to_calc, background_color=(229/255,60/255,40/255,1),
-                                      background_normal="off", font_name="font.otf", bold=True, font_size="30dp", size_hint=(0.3,1)))
+            toolbar.add_widget(Button(text="Return Home", on_release=self.return_to_calc,
+                                      background_color=(229 / 255, 60 / 255, 40 / 255, 1),
+                                      background_normal="off", font_name="font.otf", bold=True, font_size="30dp",
+                                      size_hint=(0.3, 1)))
 
             manager_data.add_widget(toolbar)
             manager_data.add_widget(search_field)
@@ -661,8 +654,6 @@ class Manager(Screen):
             self.add_widget(manager_data)
 
             return self
-
-
 
     def update_data(self, instance):
         global data_stuff

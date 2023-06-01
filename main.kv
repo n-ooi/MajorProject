@@ -328,7 +328,7 @@ WindowManager:
                                 pos: self.pos
                                 radius: [50]
                         on_release:
-                            root.manager_screen()
+                            root.results_screen()
 
                     Label:
                         size_hint: 0.5,1
@@ -621,7 +621,7 @@ WindowManager:
                                 tooltip_text: "Select this option if you would like\ntyre costs to be included in the lease"
                                 pos_hint: {"center_x": .5, "center_y": .5}
                         Image:
-                            source: "incidentals/cleaning.png"
+                            source: "incidentals/tyres.png"
                         Check:
                             id: inc3
                             on_release:
@@ -714,6 +714,3 @@ WindowManager:
     CheckboxLeftWidget:
         id: check
         group: "check"
-
-<SelectionButton>:
-    on_release: root.test_fn()
