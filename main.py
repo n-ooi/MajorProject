@@ -165,7 +165,7 @@ class Calc(Screen):  # This is the class that defines my main calculator screen
         with open(filename, "r") as f:  # Opens my JSON file
             temp = json.load(f)
             entryIndex = 0
-            for entry in temp: # loads each entry into an array for the data table
+            for entry in temp: # loads each entry from the current user into an array for the data table
                 username = entry["username"]
                 time = entry["time"]
                 if username == current_user:
@@ -201,7 +201,6 @@ class Calc(Screen):  # This is the class that defines my main calculator screen
         else:
             print("ERROR - Taxable income not valid: [", taxable_income, "]")
 
-        # IDEK WHAT THESE DO
         if taxable_income > 18200:
             tax = tax + taxable_income * .02
 
@@ -214,116 +213,72 @@ class Calc(Screen):  # This is the class that defines my main calculator screen
         elif 90000 < taxable_income <= 126000:
             tax = tax - 1080 + .03 * (taxable_income - 90000)
 
-        # return TAX values
+        # returns TAX values
         return tax
 
     def edit_json(self, cost, distance, term, size, salary, inc1, inc2, inc3, inc4):  # this function adds user submissions to the JSON file
         filename = "user_data.json"
-        print("json editing...")
-
-        new_user = True
-
-        def view_data():
-            with open(filename, "r") as f:
-                temp = json.load(f)
-                i = 0
-                for entry in temp:
-                    username = entry["username"]
-                    car_cost = entry["cost"]
-                    distance_travelled = entry["distance"]
-                    lease_term = entry["term"]
-                    car_size = entry["size"]
-                    salary_income = entry["salary"]
-                    insurance = entry["insurance"]
-                    roadside = entry["roadside"]
-                    tyres = entry["tyres"]
-                    servicing = entry["servicing"]
-
-                    print(f"Index Number {i}")
-                    print(f"Username: {username}")
-                    print(f"Cost: {car_cost}")
-                    print(f"Distance: {distance_travelled}")
-                    print(f"Term: {lease_term}")
-                    print(f"Size: {car_size}")
-                    print(f"Salary: {salary_income}")
-                    print("\n\n")
-                    i = i + 1
-
-        def add_data():
-            item_data = {}
-            with open(filename, "r") as f:
-                temp = json.load(f)
-            item_data["time"] = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
-            item_data["username"] = current_user
-            item_data["cost"] = cost
-            item_data["distance"] = distance
-            item_data["term"] = term
-            item_data["size"] = size
-            item_data["salary"] = salary
-            item_data["insurance"] = inc1
-            item_data["roadside"] = inc2
-            item_data["tyres"] = inc3
-            item_data["servicing"] = inc4
-            temp.append(item_data)
-            with open(filename, "w") as f:
-                json.dump(temp, f, indent=4)
-
-        filename = "user_data.json"
-        with open(filename, "r") as f:
+        item_data = {}
+        with open(filename, "r") as f: # loads the current state of the JSON file into an array
             temp = json.load(f)
-            for entry in temp:
-                username = entry["username"]
-                if username == current_user:
-                    new_user = False
-
-        if new_user:
-            add_data()
-        else:
-            print("NOT NEW USER!!! EDITING EXISTING DATA")
-            add_data()
+        # sets up a dictionary to append to the array
+        item_data["time"] = datetime.now().strftime("%d/%m/%Y %H:%M:%S") # retrieves current date/time
+        item_data["username"] = current_user
+        item_data["cost"] = cost
+        item_data["distance"] = distance
+        item_data["term"] = term
+        item_data["size"] = size
+        item_data["salary"] = salary
+        item_data["insurance"] = inc1
+        item_data["roadside"] = inc2
+        item_data["tyres"] = inc3
+        item_data["servicing"] = inc4
+        temp.append(item_data) # appends the dictionary to the array
+        with open(filename, "w") as f: # updates the JSON file - replacing it with the new array
+            json.dump(temp, f, indent=4)
 
     def entry_valid(self, carCost, annualDistance, term1, term2, term3, term4, size1, size2, size3, size4,
-                    preTaxIncome, insurance, roadside, tyres, servicing):
-        print("checking validity...")
+                    preTaxIncome, insurance, roadside, tyres, servicing): # this function checks if the user's selection are invalid
         if carCost == 0 or \
                 annualDistance == 0 or \
                 (term1 == False and term2 == False and term3 == False and term4 == False) or \
                 (size1 == False and size2 == False and size3 == False and size4 == False):
-            MDDialog(text="Check selections for errors.", ).open()
+            MDDialog(text="Check selections for errors.", ).open() # opens a popup to inform the user that there is an error
             return False
         else:
-            return True
+            return True # if valid it returns True to allow the user to continue
 
     def calc_values(self, carCost, annualDistance, term1, term2, term3, term4, size1, size2, size3, size4,
-                    preTaxIncome, insurance, roadside, tyres, servicing):
+                    preTaxIncome, insurance, roadside, tyres, servicing): # this function calculates the costs as part of the lease
+
         if self.entry_valid(carCost, annualDistance, term1, term2, term3, term4, size1, size2, size3, size4,
-                            preTaxIncome, insurance, roadside, tyres, servicing):
+                            preTaxIncome, insurance, roadside, tyres, servicing): # runs my validity function
             term = 0
-            print('\n\n' + "Car Cost: " + str(int(carCost)))
-            print("Distance: " + str(annualDistance))
+            # changes the formatting of some of the values prior to calculations
             for i in (f'12 months {term1}', f'24 months {term2}', f'36 months {term3}', f'48 months {term4}'):
                 if "True" in i:
-                    print("Term Length: " + str(i.replace("True", "")))
                     term = int(i[0:1])
 
             for i in (f'small {size1}', f'medium {size2}', f'large {size3}', f'sports {size4}'):
                 if "True" in i:
                     print("Car Size: " + str(i.replace("True", "")))
                     size = i
-            print("Salary: " + str(preTaxIncome))
 
             # SETTING PARAMETERS UP
             car_size = size
             car_cost_GST = float(carCost)
             business_percentage = 0  # if there is time make this editable
             salary_income = float(preTaxIncome)
-            residual_value = 0.4688  # if there is time make this editable
+            print(str(term)[0] + '<---')
+            residual_value = [0.65, 0.56, 0.4688, 0.37][int([str(term)][0])-1] # sets residual value according to term length
+            print(residual_value)
             kms_travelled_per_year = float(annualDistance)
             lease_term = term
             novated_interest_rate = 0.075  # if there is time make this editable
             standard_interest_rate = 0.03  # if there is time make this editable
             monthly_fee = 20  # if there is time make this editable
 
+            # Checks if user selected certain incidentals and sets variables accordingly
             if tyres:
                 tyres_cost = 500
             else:
@@ -334,8 +289,18 @@ class Calc(Screen):  # This is the class that defines my main calculator screen
             else:
                 roadside_assist = 0
 
+            if servicing:
+                normal_maintenance = 1500
+            else:
+                normal_maintenance = 0
+
+            if insurance:
+                normal_insurance = (car_cost_GST * 0.04)
+            else:
+                normal_insurance = 0
+
             decrypt("user_data.json")
-            global pauseJSON
+            global pauseJSON # prevents duplicate submissions from loading history
             if not pauseJSON:
                 self.edit_json(car_cost_GST, kms_travelled_per_year, lease_term, car_size, salary_income, insurance,
                                roadside, tyres, servicing)
@@ -346,14 +311,10 @@ class Calc(Screen):  # This is the class that defines my main calculator screen
             ar = standard_interest_rate / 12
             an = (lease_term * 12) - 2
             normal_financing = np.pmt(ar, an, aP) * 12
-            if insurance:
-                normal_insurance = (car_cost_GST * 0.04)
-            else:
-                normal_insurance = 0
             normal_fees = 0
             normal_registration = 800
 
-            # REAL
+            # Calculates fuel consumption value based on car size
             if car_size == "small True":
                 fuel_consumption = 6
             elif car_size == "medium True":
@@ -364,10 +325,7 @@ class Calc(Screen):  # This is the class that defines my main calculator screen
                 fuel_consumption = 7.6
 
             normal_fuel = (((fuel_consumption * (kms_travelled_per_year / 100)) * 1.5) * 1.2)
-            if servicing:
-                normal_maintenance = 1500
-            else:
-                normal_maintenance = 0
+
 
             # NOVATED COSTS CALCULATIONS
             car_cost_GST_adjusted = car_cost_GST - (car_cost_GST / 11)
@@ -410,6 +368,7 @@ class Calc(Screen):  # This is the class that defines my main calculator screen
                 tax_savings = 0
             money_savings = tax_savings + normal_total - novated_total
 
+            # DEBUGGING OUTPUT STATEMENTS TO CROSSCHECK AGAINST EXISTING CALCULATORS
             print("Standard PMT: " + str(np.pmt(ar, an, aP) * 12))
             print("Normal Financing: " + str(normal_financing))
             print("Normal Insurance: " + str(normal_insurance))
@@ -439,6 +398,7 @@ class Calc(Screen):  # This is the class that defines my main calculator screen
             print("\033[1;33;50m" + "Tax Savings: " + str(tax_savings) + "\033[0m")
             print("\033[1;33;50m" + "Money Savings: " + str(money_savings) + "\033[0m")
 
+            # Normal Lease Results
             label1 = Label(color="black", text=f"\n\nWithout Novated Lease: \n " + \
                                                f"------------------------------ \n" + \
                                                f"Financial Lease: ${round(normal_financing, 2)} \n" + \
@@ -452,6 +412,7 @@ class Calc(Screen):  # This is the class that defines my main calculator screen
                                                f"------------------------------ \n" + \
                                                f"Normal Total: ${round(normal_total, 2)} \n")
 
+            # Novated Lease Results
             label2 = Label(color="black", text=f"\n\nWith Novated Lease: \n " + \
                                                f"------------------------------ \n" + \
                                                f"Financial Lease: ${round(novated_financing, 2)} \n" + \
@@ -465,6 +426,7 @@ class Calc(Screen):  # This is the class that defines my main calculator screen
                                                f"------------------------------ \n" + \
                                                f"Novated Total: ${round(novated_total, 2)} \n")
 
+            # Total Results
             label3 = Label(color="black", text=f"Totals: \n " + \
                                                f"------------------------------ \n" + \
                                                f"Tax Savings: $" + str(round(tax_savings, 2)) + \
@@ -472,24 +434,26 @@ class Calc(Screen):  # This is the class that defines my main calculator screen
                                                f"\nMonthly Payment: $" + str(round(novated_total / 12, 2)))
 
             content = Content()
+
+            # Sets up PopUp and adds the different results
             window = MDDialog(title="Results", type="custom", content_cls=content)
             content.add_widget(label1)
             content.add_widget(label2)
             content.add_widget(label3)
-            window.open()
+            window.open() # OPENS popup
 
 
-    def help_popup(self):
+    def help_popup(self): # This defines the help popup on the calculator screen
         window = MDDialog(title="Help",
                           text="Using the slider and checkboxes below, \nselect the specifications of your novated lease.\nOnce you are done press 'CALCULATE' to recieve your results. \n\nIf you want to look back on any of your previous submissions, \npress the 'History' button' to load any of your previous entries. \n\nIf you would like to logout, switch account, etc.\nuse the 'Log Out' button to do so. ")
         window.open()
 
 
-class Login(Screen):
+class Login(Screen): # This class is for my Login screen
     def on_enter(self):
         pass
 
-    def password_view(self, passIcon):
+    def password_view(self, passIcon): # This function enables the user to toggle password view
         if passIcon == 'eye-off-outline':
             self.ids.LoginPassword.password = False
             self.ids.view.icon = "eye-outline"
@@ -497,35 +461,35 @@ class Login(Screen):
             self.ids.LoginPassword.password = True
             self.ids.view.icon = "eye-off-outline"
 
-    def login_validation(self, LoginUsername, LoginPassword, root):
+    def login_validation(self, LoginUsername, LoginPassword, root): # This function checks validity of a user's login inputs
         decrypt('login-details.csv')
         check = pd.read_csv('login-details.csv')
-        if LoginUsername not in check['Username'].unique():
+        if LoginUsername not in check['Username'].unique(): # Checks if a user exists with the username
             print("Username not found")
             MDDialog(text="Username or Password are incorrect.", ).open()
             pass  # deny access (Username not registered)
-        else:
+        else: # If a user does exist with the username it checks the password
             user_info = check[['Username', 'Password']][check['Username'] == LoginUsername]
             user_password = user_info['Password'].values[0]
             if LoginPassword == user_password:
-                if LoginUsername == 'admin':
+                if LoginUsername == 'admin': # If the admin logs in it will go to the manager screen
                     MDApp.get_running_app().switch_screen("manager")
-                else:
+                else: # otherwise it goes to the main calculator screen
                     MDApp.get_running_app().switch_screen("Calc")
                 print("Password Correct")
-                global current_user
+                global current_user # updates current user to the logged-in user
                 current_user = LoginUsername
-            else:
+            else: # IF the details are incorrect it displays the error
                 print("Password Incorrect")
                 MDDialog(text="Username or Password are incorrect.", ).open()
         encrypt('login-details.csv')
 
 
-class SignUp(Screen):
+class SignUp(Screen): # This class defines my Signup screen
     def on_enter(self):
         pass
 
-    def password_view_su(self, passIcon, num):
+    def password_view_su(self, passIcon, num): # This function allows the user to toggle password view on both password inputs
         if num == 1:
             if passIcon == 'eye-off-outline':
                 self.ids.SignUpPassword1.password = False
@@ -548,16 +512,16 @@ class SignUp(Screen):
         users = pd.read_csv('login-details.csv')
         user = pd.DataFrame([[SignUpUsername, SignUpPassword1]],
                             columns=['Username', 'Password'])
-        if SignUpPassword2 != SignUpPassword1:
+        if SignUpPassword2 != SignUpPassword1: # Checks if passwords match
             MDDialog(text="Passwords don't match.", ).open()
         else:
-            if SignUpUsername.isalnum():
+            if SignUpUsername.isalnum(): # Checks if username is alphanumeric
                 if SignUpUsername and SignUpPassword1:
                     if SignUpUsername not in users['Username'].unique():
                         # if Username does not exist already then append to the csv file
-                        MDApp.get_running_app().switch_screen(
-                            "login")  # to change current screen to log in the user now
+                        MDApp.get_running_app().switch_screen("login")  # to change current screen to log in the user now
                         user.to_csv('login-details.csv', mode='a', header=False, index=False)
+            # All errors are displayed in respective popups
                     else:
                         MDDialog(text="Username Taken.", ).open()
                 else:
@@ -570,19 +534,19 @@ class SignUp(Screen):
 data_stuff = []
 
 
-class Manager(Screen):
-    def on_enter(self):
+class Manager(Screen): # This class defines my manager screen
+    def on_enter(self): # on loading the screen it begins to build the datatable to display submissions
         global data_stuff
         global current_user
         print(f"user = {current_user}")
-        if current_user == 'admin':
+        if current_user == 'admin': # double checks that the user has permission to view this screen
             print("Access Approved - Building Screen...")
             filename = 'user_data.json'
             decrypt(filename)
-            with open(filename, "r") as f:
+            with open(filename, "r") as f: # opens the JSON file
                 temp = json.load(f)
                 i = 0
-                for entry in temp:
+                for entry in temp: # loads each entry in the JSON file into an array
                     time = entry["time"]
                     username = entry["username"]
                     car_cost = entry["cost"]
@@ -600,24 +564,28 @@ class Manager(Screen):
                                           inc4])
                     i += 1
 
+            # This defines the main box layout for my screen
             manager_data = BoxLayout(
                 orientation='vertical',
                 padding="20dp",
                 spacing="20dp"
             )
 
+            # This defines the search bar
             search_field = MDTextField(
                 hint_text='Search',
                 on_text_validate=self.update_data,
                 size_hint_y=0.1,
             )
 
+            # This defines the toolbar which consists of the title and logout button
             toolbar = BoxLayout(
                 orientation='horizontal',
                 size_hint_y=.2,
                 spacing="20dp"
             )
 
+            # Adding the components of the toolbar to the Box Layout
             toolbar.add_widget(Button(text="Welcome Admin", font_name="font.otf", bold=True, font_size="50dp",
                                       background_color=(229 / 255, 60 / 255, 40 / 255, 1),
                                       background_normal="off"))
@@ -626,9 +594,11 @@ class Manager(Screen):
                                       background_normal="off", font_name="font.otf", bold=True, font_size="30dp",
                                       size_hint=(0.3, 1)))
 
+            # Adding toolbar and searchbar to main box layout
             manager_data.add_widget(toolbar)
             manager_data.add_widget(search_field)
 
+            # creates datatable using the array of all JSON files
             self.data_tables = MDDataTable(
                 use_pagination=True,
                 pagination_menu_pos='center',
@@ -653,30 +623,30 @@ class Manager(Screen):
             encrypt(filename)
             self.add_widget(manager_data)
 
-            return self
+            return self # Displays the datatable
 
-    def update_data(self, instance):
+    def update_data(self, instance): # this function updates the datatable based on the query in the searchbar
         global data_stuff
         self.data_tables.row_data = data_stuff
         search_query = instance.text.lower()
         filtered_data = [row for row in self.data_tables.row_data if search_query in str(row).lower()]
         self.data_tables.row_data = filtered_data
 
-    def return_to_calc(self, instance):
+    def return_to_calc(self, instance): # defines the function to logout
         MDApp.get_running_app().switch_screen("login")
 
-    def on_leave(self, *args):
+    def on_leave(self, *args): # clears the screen when logging-out
         self.clear_widgets()
 
 
 class WindowManager(ScreenManager):  # this class defines the ScreenManager
     pass
 
-
 decrypt('login-details.csv')
 users = pd.read_csv('login-details.csv')
 encrypt('login-details.csv')
 
+# Sets up the Window Manager - adding screens
 WindowManager().add_widget(Login(name='login'))
 WindowManager().add_widget(SignUp(name='signup'))
 WindowManager().add_widget(Calc(name='Calc'))
@@ -688,9 +658,9 @@ class EasyPeasyLeasy(MDApp):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.load_kv("main.kv")
+        self.load_kv("main.kv") # loads my kv file
 
-    def switch_screen(self, screen_name, *args):
+    def switch_screen(self, screen_name, *args): # defines my function to swap screens
         self.root.current = screen_name
 
 
