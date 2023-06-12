@@ -1,3 +1,10 @@
+# ----------------------------------------- #
+#         NOVATED LEASE CALCULATOR          #
+#       Made by Nathaniel Ooi (2023)        #
+#      Software Design Development AT3      #
+# ----------------------------------------- #
+
+# ALL OF MY IMPORTS
 import json
 from datetime import datetime
 
@@ -5,17 +12,12 @@ import numpy_financial as np
 import pandas as pd
 from cryptography.fernet import Fernet
 from kivy.core.window import Window
-from kivy.graphics import Color
 from kivy.metrics import dp
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
-from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.label import Label
-from kivy.uix.popup import Popup
 from kivy.uix.screenmanager import Screen, ScreenManager
-from kivy.uix.scrollview import ScrollView
-from kivy.uix.widget import Widget
 from kivymd.app import MDApp
 from kivymd.uix.button import MDFlatButton
 from kivymd.uix.datatables import MDDataTable
@@ -23,6 +25,7 @@ from kivymd.uix.dialog import MDDialog
 from kivymd.uix.list import OneLineAvatarIconListItem
 from kivymd.uix.textfield import MDTextField
 
+# Global Variables
 results = ""
 current_user = ""
 entryNum = ""
@@ -30,9 +33,8 @@ pauseJSON = False
 
 with open('filekey.key', 'rb') as filekey:  # retrieves the decryption key from my file
     key = filekey.read()
-
 fernet = Fernet(key)
-
+print(fernet)
 
 # noinspection PyShadowingNames
 def decrypt(file_name):  # Decryption Function: uses Fernet key to decrypt file
@@ -105,10 +107,10 @@ class Calc(Screen):  # This is the class that defines my main calculator screen
                 lease_term = entry["term"]
                 car_size = entry["size"]
                 salary_income = entry["salary"]
-                inc1 = entry["insurance"]
-                inc2 = entry["roadside"]
-                inc3 = entry["tyres"]
-                inc4 = entry["servicing"]
+                insurance = entry["insurance"]
+                roadside_assist = entry["roadside"]
+                tyres = entry["tyres"]
+                servicing = entry["servicing"]
 
                 if username == current_user:  # search for logged-in user is found
                     entryIndex = entryIndex + 1  # increments entryIndex until it finds the number entry that has been selected
@@ -135,15 +137,15 @@ class Calc(Screen):  # This is the class that defines my main calculator screen
                         elif car_size == "sports True":
                             self.ids.size4.active = True
 
-                        print(inc1, inc2, inc3, inc4)
-                        if inc1:
-                            self.ids.inc1.active = True
-                        if inc2:
-                            self.ids.inc2.active = True
-                        if inc3:
-                            self.ids.inc4.active = True
-                        if inc4:
-                            self.ids.inc4.active = True
+                        print(insurance, roadside_assist, tyres, servicing)
+                        if insurance:
+                            self.ids.insurance.active = True
+                        if roadside_assist:
+                            self.ids.roadside_assist.active = True
+                        if tyres:
+                            self.ids.servicing.active = True
+                        if servicing:
+                            self.ids.servicing.active = True
 
                 i = i + 1
         encrypt('user_data.json')
@@ -152,15 +154,15 @@ class Calc(Screen):  # This is the class that defines my main calculator screen
         self.calc_values(self.ids.carCost.value, self.ids.annualDistance.value, self.ids.term1.active,
                          self.ids.term2.active, self.ids.term3.active, self.ids.term4.active,
                          self.ids.size1.active, self.ids.size2.active, self.ids.size3.active, self.ids.size4.active,
-                         self.ids.preTaxIncome.value, self.ids.inc1.active, self.ids.inc2.active, self.ids.inc3.active,
-                         self.ids.inc4.active)  # Runs my function to calculate and display results
+                         self.ids.preTaxIncome.value, self.ids.insurance.active, self.ids.roadside_assist.active, self.ids.tyres.active,
+                         self.ids.servicing.active)  # Runs my function to calculate and display results
         pauseJSON = False
 
     def results_screen(self): # this function opens my results dialog box
         filename = "user_data.json"
         decrypt(filename)
 
-        stuff = []
+        history_results = []
 
         with open(filename, "r") as f:  # Opens my JSON file
             temp = json.load(f)
@@ -170,13 +172,13 @@ class Calc(Screen):  # This is the class that defines my main calculator screen
                 time = entry["time"]
                 if username == current_user:
                     entryIndex = entryIndex + 1
-                    stuff.insert(0, ItemConfirm(text=f"{time} - Submission {entryIndex}"))
+                    history_results.insert(0, ItemConfirm(text=f"{time} - Submission {entryIndex}"))
 
         # This defines the window that pops up when displaying results
         window = MDDialog(
             title="Past Entries",
             type="confirmation",
-            items=stuff,
+            items=history_results,
             buttons=[
                 MDFlatButton(
                     text="SELECT", on_release=self.update_entry  # when pressing select it runs a function
@@ -216,7 +218,7 @@ class Calc(Screen):  # This is the class that defines my main calculator screen
         # returns TAX values
         return tax
 
-    def edit_json(self, cost, distance, term, size, salary, inc1, inc2, inc3, inc4):  # this function adds user submissions to the JSON file
+    def edit_json(self, cost, distance, term, size, salary, insurance, roadside_assist, tyres, servicing):  # this function adds user submissions to the JSON file
         filename = "user_data.json"
         item_data = {}
         with open(filename, "r") as f: # loads the current state of the JSON file into an array
@@ -229,10 +231,10 @@ class Calc(Screen):  # This is the class that defines my main calculator screen
         item_data["term"] = term
         item_data["size"] = size
         item_data["salary"] = salary
-        item_data["insurance"] = inc1
-        item_data["roadside"] = inc2
-        item_data["tyres"] = inc3
-        item_data["servicing"] = inc4
+        item_data["insurance"] = insurance
+        item_data["roadside"] = roadside_assist
+        item_data["tyres"] = tyres
+        item_data["servicing"] = servicing
         temp.append(item_data) # appends the dictionary to the array
         with open(filename, "w") as f: # updates the JSON file - replacing it with the new array
             json.dump(temp, f, indent=4)
@@ -254,7 +256,7 @@ class Calc(Screen):  # This is the class that defines my main calculator screen
         if self.entry_valid(carCost, annualDistance, term1, term2, term3, term4, size1, size2, size3, size4,
                             preTaxIncome, insurance, roadside, tyres, servicing): # runs my validity function
             term = 0
-            # changes the formatting of some of the values prior to calculations
+            # changes the formatting of some values prior to calculations
             for i in (f'12 months {term1}', f'24 months {term2}', f'36 months {term3}', f'48 months {term4}'):
                 if "True" in i:
                     term = int(i[0:1])
@@ -404,7 +406,7 @@ class Calc(Screen):  # This is the class that defines my main calculator screen
                                                f"Financial Lease: ${round(normal_financing, 2)} \n" + \
                                                f"Registration: ${round(normal_registration, 2)} \n" + \
                                                f"Fuel: ${round(normal_fuel, 2)} \n" + \
-                                               f"Maintenance/Servicing: ${round(normal_maintenance, 2)} \n" + \
+                                               f"Servicing: ${round(normal_maintenance, 2)} \n" + \
                                                f"Insurance: ${round(normal_insurance, 2)} \n" + \
                                                f"Tyres: ${round(tyres_cost, 2)} \n" + \
                                                f"Roadside Assist: ${round(roadside_assist, 2)} \n" + \
@@ -418,7 +420,7 @@ class Calc(Screen):  # This is the class that defines my main calculator screen
                                                f"Financial Lease: ${round(novated_financing, 2)} \n" + \
                                                f"Registration: ${round(novated_registration, 2)} \n" + \
                                                f"Fuel: ${round(novated_fuel, 2)} \n" + \
-                                               f"Maintenance/Servicing: ${round(novated_maintenance, 2)} \n" + \
+                                               f"Servicing: ${round(novated_maintenance, 2)} \n" + \
                                                f"Insurance: ${round(novated_insurance, 2)} \n" + \
                                                f"Tyres: ${round(novated_tyres, 2)} \n" + \
                                                f"Roadside Assist: ${round(novated_roadside, 2)} \n" + \
@@ -452,6 +454,19 @@ class Calc(Screen):  # This is the class that defines my main calculator screen
 class Login(Screen): # This class is for my Login screen
     def on_enter(self):
         pass
+
+    def on_leave(self, *args): # This clears the password + username when the user leaves the page
+        self.ids.LoginPassword.text = ""
+        self.ids.LoginUsername.text = ""
+        self.ids.LoginPassword.password = True
+        self.ids.view.icon = "eye-off-outline"
+
+    def help_button(self): # This function opens up my procedural help for the Login page
+        MDDialog(title="Help for Login Page",
+                 text="1. Type your Username and Password\n"
+                      "2. Press the Login Button\n"
+                      "3. If your details are correct you will be logged in\n\n"
+                      "If you don't have an account... press the 'Sign Up' hyperlink to sign up").open()
 
     def password_view(self, passIcon): # This function enables the user to toggle password view
         if passIcon == 'eye-off-outline':
@@ -488,6 +503,22 @@ class Login(Screen): # This class is for my Login screen
 class SignUp(Screen): # This class defines my Signup screen
     def on_enter(self):
         pass
+
+    def on_leave(self, *args): # This function clears the username and passwords when the user leaves the page
+        self.ids.SignUpUsername.text = ""
+        self.ids.SignUpPassword1.text = ""
+        self.ids.SignUpPassword2.text = ""
+        self.ids.SignUpPassword1.password = True
+        self.ids.SignUpPassword2.password = True
+        self.ids.view1.icon = "eye-off-outline"
+        self.ids.view2.icon = "eye-off-outline"
+
+    def help_button(self): # This function opens up the procedural help for the Sign Up Page
+        MDDialog(title="Help for Signup Page",
+                 text="1. Choose a username - It must be alphanumeric and not already taken\n"
+                      "2. Choose a password and verify your password\n"
+                      "3. Press the Signup button and if details are valid you will have made an account!\n\n"
+                      "If you already have an account... Press the 'Login' hyperlink to login").open()
 
     def password_view_su(self, passIcon, num): # This function allows the user to toggle password view on both password inputs
         if num == 1:
@@ -531,12 +562,12 @@ class SignUp(Screen): # This class defines my Signup screen
         encrypt('login-details.csv')
 
 
-data_stuff = []
+datatable_data = []
 
 
 class Manager(Screen): # This class defines my manager screen
     def on_enter(self): # on loading the screen it begins to build the datatable to display submissions
-        global data_stuff
+        global datatable_data
         global current_user
         print(f"user = {current_user}")
         if current_user == 'admin': # double checks that the user has permission to view this screen
@@ -544,9 +575,9 @@ class Manager(Screen): # This class defines my manager screen
             filename = 'user_data.json'
             decrypt(filename)
             with open(filename, "r") as f: # opens the JSON file
-                temp = json.load(f)
+                userdata_json = json.load(f)
                 i = 0
-                for entry in temp: # loads each entry in the JSON file into an array
+                for entry in userdata_json: # loads each entry in the JSON file into an array
                     time = entry["time"]
                     username = entry["username"]
                     car_cost = entry["cost"]
@@ -554,14 +585,14 @@ class Manager(Screen): # This class defines my manager screen
                     lease_term = entry["term"]
                     car_size = entry["size"]
                     salary_income = entry["salary"]
-                    inc1 = entry["insurance"]
-                    inc2 = entry["roadside"]
-                    inc3 = entry["tyres"]
-                    inc4 = entry["servicing"]
-                    data_stuff.insert(0, [i + 1, time, username, car_cost, distance_travelled, lease_term,
-                                          car_size.replace(' True', '').replace(' False', ''), salary_income, inc1,
-                                          inc2, inc3,
-                                          inc4])
+                    insurance = entry["insurance"]
+                    roadside_assist = entry["roadside"]
+                    tyres = entry["tyres"]
+                    servicing = entry["servicing"]
+                    datatable_data.insert(0, [i + 1, time, username, car_cost, distance_travelled, lease_term,
+                                          car_size.replace(' True', '').replace(' False', ''), salary_income, insurance,
+                                          roadside_assist, tyres,
+                                          servicing])
                     i += 1
 
             # This defines the main box layout for my screen
@@ -603,7 +634,7 @@ class Manager(Screen): # This class defines my manager screen
                 use_pagination=True,
                 pagination_menu_pos='center',
                 rows_num=10,
-                column_data=[
+                column_data=[ # Sets up each other columns
                     ("ID", dp(10)),
                     ("Time/Date", dp(40)),
                     ("Username", dp(30)),
@@ -617,7 +648,7 @@ class Manager(Screen): # This class defines my manager screen
                     ("Tyres", dp(20)),
                     ("Servicing", dp(20))
                 ],
-                row_data=data_stuff
+                row_data=datatable_data
             )
             manager_data.add_widget(self.data_tables)
             encrypt(filename)
@@ -626,8 +657,8 @@ class Manager(Screen): # This class defines my manager screen
             return self # Displays the datatable
 
     def update_data(self, instance): # this function updates the datatable based on the query in the searchbar
-        global data_stuff
-        self.data_tables.row_data = data_stuff
+        global datatable_data
+        self.data_tables.row_data = datatable_data
         search_query = instance.text.lower()
         filtered_data = [row for row in self.data_tables.row_data if search_query in str(row).lower()]
         self.data_tables.row_data = filtered_data

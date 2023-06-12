@@ -1,26 +1,31 @@
-WindowManager:
+WindowManager: 
+# Sets up my screens within my screen manager
     Login:
     SignUp:
     Calc:
     Manager:
 
 <TooltipMDIconButton@MDIconButton+MDTooltip>
+# Defines a widget of Icon Button and Tooltip combined (I use this mostly for help)
 
+# My Login Screen
 <Login>:
     name: "login"
     FloatLayout:
+    # Help Button
         TooltipMDIconButton:
             icon: "help-circle-outline"
             tooltip_text: "After signing up, use this page to login with your username and password. \nIf you don't have account, switch to the Signup screen to create one."
+            on_release: root.help_button()
     MDBoxLayout:
+    # Splits the screen into two halves (login entry and art)
         orientation: "horizontal"
         BoxLayout:
-            #elevation: 0
-            #md_bg_color: 1,1,1,1
             orientation: "vertical"
             padding: "70dp","160dp", "70dp", "160dp"
             spacing: "40dp"
             MDLabel:
+            # Screen Title
                 text: "Login"
                 font_size: "40dp"
                 bold: True
@@ -31,6 +36,7 @@ WindowManager:
 
 
                 MDCard:
+                # Username Text Input
                     orientation: "vertical"
                     padding: "40dp","12dp"
                     height: root.height*0.08
@@ -43,6 +49,7 @@ WindowManager:
                             tooltip_text: "Type your username here"
                             pos_hint: {"center_x": .5, "center_y": .5}
                     MDTextField:
+                    # Actual part that takes text input
                         id: LoginUsername
                         line_color_focus: 229/255,60/255,40/255,1
                         font_size: "15dp"
@@ -52,6 +59,7 @@ WindowManager:
                 orientation: "vertical"
 
                 MDCard:
+                # Password Text Input
                     orientation: "vertical"
                     padding: "40dp","12dp"
                     BoxLayout:
@@ -59,14 +67,17 @@ WindowManager:
                             text: "Password"
                             font_size: "18dp"
                         TooltipMDIconButton:
+                        # Toggles Password View
                             id: view
                             icon: "eye-off-outline"
                             tooltip_text: "Toggle Password View"
                             pos_hint: {"center_x": .5, "center_y": .5}
                             on_release:
                                 root.password_view(self.icon)
+                                # function called to switch password view
 
                     MDTextField:
+                    # Actual text entry area
                         id: LoginPassword
                         line_color_focus: 229/255,60/255,40/255,1
                         font_size: "15dp"
@@ -75,6 +86,7 @@ WindowManager:
 
 
             MDRaisedButton:
+            # Login Button
                 text: "Login"
                 font_size: "20dp"
                 md_bg_color: 229/255,60/255,40/255,1
@@ -85,14 +97,13 @@ WindowManager:
                 size_hint: None, None
                 on_release:
                     root.login_validation(LoginUsername.text, LoginPassword.text, root)
-                    root.manager.screens[2].ids.my_Label.text = "Welcome " + (root.ids.LoginUsername.text).partition("@")[0]
+                    # Password + Username passed through to get verified
+                    root.manager.screens[2].ids.my_Label.text = "Welcome " + (root.ids.LoginUsername.text)
+                    # Sets welcome screen to username
                     root.manager.transition.direction = "down"
-                    root.ids.LoginUsername.text = ""
-                    root.ids.LoginPassword.text = ""
-                    root.ids.view.icon = "eye-off-outline"
-                    root.ids.LoginPassword.password = True
 
             Button:
+            # Sign Up button - switches to Sign Up screen
                 text: "Haven't got an account? Sign Up"
                 background_normal: ''
                 font_size: "15dp"
@@ -105,16 +116,12 @@ WindowManager:
                 on_release:
                     app.root.current = "signup"
                     root.manager.transition.direction = "down"
-                    root.ids.LoginUsername.text = ""
-                    root.ids.LoginPassword.text = ""
-                    root.ids.view.icon = "eye-off-outline"
-                    root.ids.LoginPassword.password = True
 
 
         BoxLayout:
+        # Art on the right hand side
             elevation: 0
             size_hint: 0.8,1
-            # md_bg_color: 1,1,1,0
             padding: "100dp"
             canvas.before:
                 Rectangle:
@@ -123,19 +130,23 @@ WindowManager:
                     pos: self.pos
 
 <SignUp>:
+# Sign Up screen
     name: "signup"
     FloatLayout:
+    # Help icon
         TooltipMDIconButton:
             icon: "help-circle-outline"
             tooltip_text: "Use this page to create an account,\nif you already have an account switch to the Login screen to log in"
+            on_release: root.help_button()
+            # Opens procedural help
     MDBoxLayout:
         orientation: "horizontal"
         BoxLayout:
-            #md_bg_color: 1,1,1,1
             orientation: "vertical"
             padding: "70dp","140dp", "70dp", "120dp"
             spacing: "30dp"
             MDLabel:
+            # Title
                 text: "Sign Up"
                 font_size: "40dp"
                 bold: True
@@ -147,6 +158,7 @@ WindowManager:
 
 
                 MDCard:
+                # Username Text Input
                     orientation: "vertical"
                     padding: "40dp","12dp"
                     height: root.height*0.08
@@ -159,6 +171,7 @@ WindowManager:
                             tooltip_text: "Type your username here."
                             pos_hint: {"center_x": .5, "center_y": .5}
                     MDTextField:
+                    # Actual text field
                         id: SignUpUsername
                         line_color_focus: 229/255,60/255,40/255,1
                         font_size: "15dp"
@@ -167,6 +180,7 @@ WindowManager:
                 orientation: "vertical"
 
                 MDCard:
+                # Custom Password Text Input
                     orientation: "vertical"
                     padding: "40dp","12dp"
                     BoxLayout:
@@ -174,12 +188,14 @@ WindowManager:
                             text: "Password"
                             font_size: "18dp"
                         TooltipMDIconButton:
+                        # Button enables Password View
                             id: view1
                             icon: "eye-off-outline"
                             tooltip_text: "Toggle Password View"
                             pos_hint: {"center_x": .5, "center_y": .5}
                             on_release:
                                 root.password_view_su(self.icon, 1)
+                                # passes which password view is being toggled
                     MDTextField:
                         id: SignUpPassword1
                         line_color_focus: 229/255,60/255,40/255,1
@@ -190,6 +206,7 @@ WindowManager:
                 orientation: "vertical"
 
                 MDCard:
+                # Verify Password Text Input
                     orientation: "vertical"
                     padding: "40dp","12dp"
                     BoxLayout:
@@ -197,12 +214,14 @@ WindowManager:
                             text: "Confirm Password"
                             font_size: "18dp"
                         TooltipMDIconButton:
+                        # Button toggles password view
                             id: view2
                             icon: "eye-off-outline"
                             tooltip_text: "Toggle Password View"
                             pos_hint: {"center_x": .5, "center_y": .5}
                             on_release:
                                 root.password_view_su(self.icon, 2)
+                                # passes which password view is being toggled
                     MDTextField:
                         id: SignUpPassword2
                         line_color_focus: 229/255,60/255,40/255,1
@@ -210,6 +229,7 @@ WindowManager:
                         password: True
 
             MDRaisedButton:
+            # Sign Up button - registers the user if details are all valid
                 text: "Sign Up"
                 font_size: "20dp"
                 md_bg_color: 229/255,60/255,40/255,1
@@ -220,19 +240,11 @@ WindowManager:
                 size_hint: None, None
                 disabled: False
                 on_release:
-                    # app.root.current = "Calc"
-                    # root.manager.transition.direction = "down"
-                   # root.signup_validation(SignUpUsername.text, SignUpPassword1.text, root)
                     root.signupbtn(SignUpUsername.text, SignUpPassword1.text, SignUpPassword2.text, root)
-                    root.ids.SignUpUsername.text = ""
-                    root.ids.SignUpPassword1.text = ""
-                    root.ids.SignUpPassword2.text = ""
-                    root.ids.view1.icon = "eye-off-outline"
-                    root.ids.view2.icon = "eye-off-outline"
-                    root.ids.SignUpPassword1.password = True
-                    root.ids.SignUpPassword2.password = True
+                    # Passes Username and Password entries to validate their entries
 
             Button:
+            # Button switches screen to Login page
                 text: "Already have an account? Login"
                 background_normal: ''
                 background_active: False
@@ -246,20 +258,11 @@ WindowManager:
                 on_release:
                     app.root.current = "login"
                     root.manager.transition.direction = "up"
-                    root.ids.SignUpUsername.text = ""
-                    root.ids.SignUpPassword1.text = ""
-                    root.ids.SignUpPassword2.text = ""
-                    root.ids.view1.icon = "eye-off-outline"
-                    root.ids.view2.icon = "eye-off-outline"
-                    root.ids.SignUpPassword1.password = True
-                    root.ids.SignUpPassword2.password = True
-
-
 
         BoxLayout:
+        # Art
             elevation: 0
             size_hint: 0.8,1
-            # md_bg_color: 229/255,60/255,40/255,1
             padding: "100dp"
             canvas.before:
                 Rectangle:
@@ -267,21 +270,12 @@ WindowManager:
                     size: self.size
                     pos: self.pos
 
-
-
-
-
-
-
-
-
 <Calc>:
-    #background_normal: ''
+# Calculation Screen
     name: "Calc"
     Screen:
-        #background_normal: ''
         ScrollView:
-            #background_normal: ''
+        # Allows user to scroll through the calculator options
             scroll_wheel_distance: 80
             effect_cls: 'DampedScrollEffect'
             size: self.size
@@ -292,6 +286,7 @@ WindowManager:
                     size: self.size
 
             GridLayout:
+            # Toolbar
                 size_hint_y: None
                 cols: 1
                 padding: "80dp"
@@ -299,18 +294,18 @@ WindowManager:
                 height: self.minimum_height
                 width: self.minimum_width
 
-##########################################################################################################
-
                 BoxLayout:
                     padding: "50dp","20dp"
                     orientation: "horizontal"
                     Label:
+                    # Title
                         size_hint: .6,1
                         text: "Novated Lease"
                         font_name: "font.otf"
                         bold: True
                         font_size: "40dp"
                     Button:
+                    # History Button
                         text: "History"
                         font_name: "font.otf"
                         bold: True
@@ -329,11 +324,13 @@ WindowManager:
                                 radius: [50]
                         on_release:
                             root.results_screen()
+                            # Opens up results history popup
 
                     Label:
                         size_hint: 0.5,1
 
                     Button:
+                    # Help button
                         text: "Help"
                         font_name: "font.otf"
                         bold: True
@@ -352,11 +349,13 @@ WindowManager:
                                 radius: [50]
                         on_release:
                             root.help_popup()
+                            # Opens procedural help for Calculator page
 
                     Label:
                         size_hint: 0.05,1
 
                     Button:
+                    # Log Out button
                         text: "Log Out"
                         font_name: "font.otf"
                         bold: True
@@ -374,6 +373,7 @@ WindowManager:
                                 pos: self.pos
                                 radius: [50]
                         on_release:
+                        # Clears data on the calculator and returns to login page
                             app.root.current = "login"
                             root.ids.carCost.value = 0
                             root.ids.annualDistance.value = 0
@@ -386,14 +386,13 @@ WindowManager:
                             root.ids.size3.active = False
                             root.ids.size4.active = False
                             root.ids.preTaxIncome.value = 0
-                            root.ids.inc1.active = False
-                            root.ids.inc2.active = False
-                            root.ids.inc3.active = False
-                            root.ids.inc4.active = False
+                            root.ids.insurance.active = False
+                            root.ids.roadside_assist.active = False
+                            root.ids.tyres.active = False
+                            root.ids.servicing.active = False
 
-
-
-                CalculatorCategory: # Introduction
+                CalculatorCategory:
+                # Introduction
                     size_hint: 1, None
                     height: "200dp"
                     Title1:
@@ -410,7 +409,8 @@ WindowManager:
                     height: "200dp"
                     spacing: "40dp"
 
-                    CalculatorCategory: # Car Cost
+                    CalculatorCategory:
+                    # Car Cost
                         height: "250dp"
                         BoxLayout:
                             size_hint: 0.4,1
@@ -418,6 +418,7 @@ WindowManager:
                             Title2:
                                 text: "Car Cost"
                             TooltipMDIconButton:
+                            # Help Tooltip
                                 icon: "help-circle-outline"
                                 tooltip_text: "Select the approximate value of the car you're purchasing (including GST)"
                                 pos_hint: {"center_x": .5, "center_y": .5}
@@ -432,7 +433,8 @@ WindowManager:
                             font_size: "20dp"
                             text: "$" + str(int(carCost.value))
 
-                    CalculatorCategory: # Annual Distance Travelled
+                    CalculatorCategory:
+                    # Annual Distance Travelled
                         height: "250dp"
                         BoxLayout:
                             size_hint: 0.65,1
@@ -440,6 +442,7 @@ WindowManager:
                             Title2:
                                 text: "Annual Distance"
                             TooltipMDIconButton:
+                            # Help Tooltip
                                 icon: "help-circle-outline"
                                 tooltip_text: "Select the approximate distance (in km) you travel by car each year"
                                 pos_hint: {"center_x": .5, "center_y": .5}
@@ -459,7 +462,8 @@ WindowManager:
                     height: "250dp"
                     spacing: "40dp"
 
-                    CalculatorCategory: # Term (length of lease)
+                    CalculatorCategory:
+                    # Term (length of lease)
                         height: "250dp"
                         BoxLayout:
                             size_hint: 0.55,1
@@ -467,10 +471,12 @@ WindowManager:
                             Title2:
                                 text: "Term Length"
                             TooltipMDIconButton:
+                            # Help Tooltip
                                 icon: "help-circle-outline"
                                 tooltip_text: "Select your desired term length for the lease"
                                 pos_hint: {"center_x": .5, "center_y": .5}
                         GridLayout:
+                        # Grid layout of all check items for Term Lease
                             cols: 4
                             Check:
                                 group: 'lengthTerm'
@@ -501,7 +507,8 @@ WindowManager:
                             Title4:
                                 text: "48 months"
 
-                    CalculatorCategory: # Car Size
+                    CalculatorCategory:
+                    # Car Size
                         height: "250dp"
                         BoxLayout:
                             size_hint: 0.4,1
@@ -509,11 +516,13 @@ WindowManager:
                             Title2:
                                 text: "Car Size"
                             TooltipMDIconButton:
+                            # Help Tooltip
                                 icon: "help-circle-outline"
                                 tooltip_text: "Select the size of your desired car \n(this is used for fuel calculations)"
                                 pos_hint: {"center_x": .5, "center_y": .5}
 
                         GridLayout:
+                        # Gridlayout of all checkboxes for car size
                             cols: 4
                             Check:
                                 group: 'carSize'
@@ -544,7 +553,8 @@ WindowManager:
                             Title4:
                                 text: "Sports"
 
-                CalculatorCategory: # Pre-tax income
+                CalculatorCategory:
+                # Pre-tax income
                     height: "250dp"
                     size_hint: 1, None
                     BoxLayout:
@@ -553,6 +563,7 @@ WindowManager:
                         Title2:
                             text: "Income"
                         TooltipMDIconButton:
+                        # Help Tooltip
                             icon: "help-circle-outline"
                             tooltip_text: "Select your yearly salary (prior to tax)"
                             pos_hint: {"center_x": .5, "center_y": .5}
@@ -573,7 +584,8 @@ WindowManager:
                     size_hint: 1,None
                     height: "300dp"
                     spacing: "40dp"
-                    CalculatorCategory: # Incidental
+                    CalculatorCategory:
+                    # Incidental Insurance
                         height: "300dp"
                         size_hint: 1, None
                         BoxLayout:
@@ -587,11 +599,12 @@ WindowManager:
                         Image:
                             source: "incidentals/insurance.png"
                         Check:
-                            id: inc1
+                            id: insurance
                             on_release:
                                 print("insurance", self.active)
 
-                    CalculatorCategory: # Incidental
+                    CalculatorCategory:
+                    # Incidental Roadside Assist
                         height: "300dp"
                         size_hint: 1, None
                         BoxLayout:
@@ -605,11 +618,12 @@ WindowManager:
                         Image:
                             source: "incidentals/roadside.webp"
                         Check:
-                            id: inc2
+                            id: roadside_assist
                             on_release:
                                 print("roadside_assist", self.active)
 
-                    CalculatorCategory: # Incidental
+                    CalculatorCategory:
+                    # Incidental Tyres
                         height: "300dp"
                         size_hint: 1, None
                         BoxLayout:
@@ -623,11 +637,12 @@ WindowManager:
                         Image:
                             source: "incidentals/tyres.png"
                         Check:
-                            id: inc3
+                            id: tyres
                             on_release:
                                 print("Tyre", self.active)
 
-                    CalculatorCategory: # Incidental
+                    CalculatorCategory:
+                    # Incidental Servicing
                         height: "300dp"
                         size_hint: 1, None
                         BoxLayout:
@@ -641,11 +656,12 @@ WindowManager:
                         Image:
                             source: "incidentals/servicing.png"
                         Check:
-                            id: inc4
+                            id: servicing
                             on_release:
                                 print("servicing", self.active)
 
                 CalculatorCategory:
+                # CALCULATE BUTTON
                     md_bg_color: 229/255,60/255,40/255,.7
                     height: "250dp"
                     size_hint: 1, None
@@ -665,43 +681,51 @@ WindowManager:
                                 pos: self.pos
                                 radius: [50]
                         on_release:
+                        # Passes through all of the user's selection for calculation
                             root.calc_values(carCost.value, annualDistance.value, term1.active, term2.active, term3.active, term4.active,
-                            size1.active, size2.active, size3.active, size4.active, preTaxIncome.value, inc1.active, inc2.active, inc3.active, inc4.active)
+                            size1.active, size2.active, size3.active, size4.active, preTaxIncome.value, insurance.active, roadside_assist.active, tyres.active, servicing.active)
 
 <Manager>:
+# Placeholder for manager screen while it loads
     name: 'manager'
     Label:
         text: "Loading..."
         color: 'black'
 
 <Title1@Label>:
+# Preset for Title 1
     font_size: "80dp"
     font_name: "font.otf"
     color: 0,0,0,1
 
 <Title2@Label>:
+# Preset for Title 2
     font_size: "30dp"
     font_name: "font.otf"
     color: 0,0,0,1
 
 <Title4@Label>:
+# Preset for Title 4
     font_size: "15dp"
     font_name: "font.otf"
     color: 0,0,0,1
 
 <CalculatorCategory@MDCard>:
+# Preset for Calculator items
     padding: "120dp","30dp"
     radius: [50]
     md_bg_color: 1,1,1,1
     orientation: "vertical"
 
 <Check@MDCheckbox>:
+# Preset for Check box
     size_hint: 1, None
     height: "10dp"
     size: "48dp", "48dp"
     selected_color: 229/255,60/255,40/255,1
 
 <Content>:
+# Preset for results popup structure
     cols: 2
     spacing: "10dp"
     size_hint_y: None
@@ -710,6 +734,7 @@ WindowManager:
     width: "500dp"
 
 <ItemConfirm>:
+# Preset for items in the results popup
     on_release: root.set_icon(check)
     CheckboxLeftWidget:
         id: check
