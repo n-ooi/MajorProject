@@ -30,6 +30,7 @@ results = ""
 current_user = ""
 entryNum = ""
 pauseJSON = False
+active_manager_view = False
 
 with open('filekey.key', 'rb') as filekey:  # retrieves the decryption key from my file
     key = filekey.read()
@@ -431,7 +432,7 @@ class Calc(Screen):  # This is the class that defines my main calculator screen
             # Total Results
             label3 = Label(color="black", text=f"Totals: \n " + \
                                                f"------------------------------ \n" + \
-                                               f"Tax Savings: $" + str(round(tax_savings, 2)) + \
+                                               f"Yearly Tax Savings: $" + str(round(tax_savings, 2)) + \
                                                f"\nFortnightly Payment: $" + str(round(novated_total / 26, 2)) + \
                                                f"\nMonthly Payment: $" + str(round(novated_total / 12, 2)))
 
@@ -546,7 +547,7 @@ class SignUp(Screen): # This class defines my Signup screen
         if SignUpPassword2 != SignUpPassword1: # Checks if passwords match
             MDDialog(text="Passwords don't match.", ).open()
         else:
-            if SignUpUsername.isalnum(): # Checks if username is alphanumeric
+            if SignUpUsername.isalnum() and len(SignUpUsername) < 24:  # Checks if username is alphanumeric and less than 32 characters
                 if SignUpUsername and SignUpPassword1:
                     if SignUpUsername not in users['Username'].unique():
                         # if Username does not exist already then append to the csv file
@@ -558,7 +559,7 @@ class SignUp(Screen): # This class defines my Signup screen
                 else:
                     MDDialog(text="Some fields are missing or incorrect.", ).open()
             else:
-                MDDialog(text="Username must be alphanumeric.", ).open()
+                MDDialog(text="Username must be alphanumeric, and must be less than 24 characters.", ).open()
         encrypt('login-details.csv')
 
 
@@ -633,7 +634,7 @@ class Manager(Screen): # This class defines my manager screen
             self.data_tables = MDDataTable(
                 use_pagination=True,
                 pagination_menu_pos='center',
-                rows_num=10,
+                rows_num=5,
                 column_data=[ # Sets up each other columns
                     ("ID", dp(10)),
                     ("Time/Date", dp(40)),
@@ -654,7 +655,180 @@ class Manager(Screen): # This class defines my manager screen
             encrypt(filename)
             self.add_widget(manager_data)
 
+            self.data_tables.bind(on_row_press=self.print_id)
             return self # Displays the datatable
+
+    def tax_calculate(self, taxable_income):  # this function calculates the tax savings based on the user's taxable income
+        tax = 0
+        if 0 < taxable_income <= 18200:
+            tax = 0
+        elif 18200 < taxable_income <= 45000:
+            tax = 0.19 * (taxable_income - 18200)
+        elif 45000 < taxable_income <= 120000:
+            tax = 5092 + .325 * (taxable_income - 45000)
+        elif 120000 < taxable_income <= 180000:
+            tax = 29467 + .37 * (taxable_income - 120000)
+        elif taxable_income > 180000:
+            tax = 51667 + .45 * (taxable_income - 180000)
+        else:
+            print("ERROR - Taxable income not valid: [", taxable_income, "]")
+
+        if taxable_income > 18200:
+            tax = tax + taxable_income * .02
+
+        if 18200 <= taxable_income <= 37000:
+            tax = tax - 255
+        elif 37000 < taxable_income <= 48000:
+            tax = tax - 255 - .075 * (taxable_income - 37000)
+        elif 48000 < taxable_income <= 90000:
+            tax = tax - 1080
+        elif 90000 < taxable_income <= 126000:
+            tax = tax - 1080 + .03 * (taxable_income - 90000)
+
+        # returns TAX values
+        return tax
+
+    def print_id(self, instance_table, instance_row):
+        ind = instance_row.index // 12
+        row_data = instance_table.row_data[ind] # Locates the row of the box clicked and retrieves the entire row as an array
+
+        # ALL BELOW CALCULATIONS ARE VERY SIMILAR TO NORMAL CALCULATIONS HOWEVER SLIGHTLY REDONE FOR MANAGER USE
+        lease_term = int(row_data[5])
+        car_size = row_data[6]
+        car_cost_GST = float(row_data[3])
+        business_percentage = 0
+        salary_income = float(row_data[7])
+        residual_value = [0.65, 0.56, 0.4688, 0.37][lease_term - 1]  # sets residual value according to term length
+        kms_travelled_per_year = float(row_data[4])
+        novated_interest_rate = 0.075
+        standard_interest_rate = 0.03
+        monthly_fee = 20
+
+        # Checks if user selected certain incidentals and sets variables accordingly
+        if row_data[10]:
+            tyres_cost = 500
+        else:
+            tyres_cost = 0
+
+        if row_data[9]:
+            roadside_assist = 500
+        else:
+            roadside_assist = 0
+
+        if row_data[11]:
+            normal_maintenance = 1500
+        else:
+            normal_maintenance = 0
+
+        if row_data[8]:
+            normal_insurance = (car_cost_GST * 0.04)
+        else:
+            normal_insurance = 0
+
+        # NORMAL COSTS CALCULATIONS
+        aP = -(car_cost_GST - (car_cost_GST * residual_value))
+        ar = standard_interest_rate / 12
+        an = (lease_term * 12) - 2
+        normal_financing = np.pmt(ar, an, aP) * 12
+        normal_fees = 0
+        normal_registration = 800
+
+        # Calculates fuel consumption value based on car size
+        if car_size == "small":
+            fuel_consumption = 6
+        elif car_size == "medium":
+            fuel_consumption = 7
+        elif car_size == "large":
+            fuel_consumption = 8
+        elif car_size == "sports":
+            fuel_consumption = 7.6
+        else:
+            fuel_consumption = 0
+
+        normal_fuel = (((fuel_consumption * (kms_travelled_per_year / 100)) * 1.5) * 1.2)
+
+        # NOVATED COSTS CALCULATIONS
+        car_cost_GST_adjusted = car_cost_GST - (car_cost_GST / 11)
+        if car_cost_GST > 69152:
+            car_cost_GST_adjusted = car_cost_GST - (69152 * .1)
+        bP = -(car_cost_GST_adjusted - (car_cost_GST_adjusted * residual_value))
+        br = novated_interest_rate / 12
+        bn = (lease_term * 12) - 2
+        novated_financing = np.pmt(br, bn, bP) * 12
+        novated_insurance = normal_insurance - normal_insurance / 11
+        novated_roadside = roadside_assist - roadside_assist / 11
+        novated_tyres = tyres_cost - tyres_cost / 11
+        novated_fees = 12 * monthly_fee
+        novated_registration = normal_registration
+        novated_fuel = (normal_fuel - normal_fuel / 11)
+        novated_maintenance = normal_maintenance - normal_maintenance / 11
+
+        # NOVATED TAX/INCOME CALCULATIONS
+        novated_total = novated_roadside + novated_tyres + novated_financing + novated_insurance + novated_fees + novated_registration + novated_fuel + novated_maintenance
+        novated_less_post_tax_deduction = (car_cost_GST * .2) * (1 - business_percentage)
+        novated_less_pre_tax_deduction = novated_total + (novated_less_post_tax_deduction / 11 - novated_less_post_tax_deduction)
+        novated_taxable_income = salary_income - novated_less_pre_tax_deduction
+        novated_less_tax = self.tax_calculate(novated_taxable_income)  # for some reason different to calculator
+        novated_net_annual_income = novated_taxable_income - novated_less_tax
+        novated_lease_final = novated_net_annual_income - novated_less_post_tax_deduction
+
+        # NORMAL TAX/INCOME CALCULATIONS
+        normal_total = roadside_assist + tyres_cost + normal_financing + normal_insurance + normal_fees + normal_registration + normal_fuel + normal_maintenance
+        normal_less_post_tax_deduction = normal_total
+        normal_less_pre_tax_deduction = "-"
+        normal_taxable_income = salary_income
+        normal_less_tax = self.tax_calculate(normal_taxable_income)  #
+        normal_net_annual_income = normal_taxable_income - normal_less_tax
+        normal_lease_final = normal_net_annual_income - normal_less_post_tax_deduction
+
+        # SAVINGS
+        tax_savings = novated_lease_final - normal_lease_final
+        if tax_savings < 0:
+            tax_savings = 0
+
+        # Normal Lease Results
+        label1 = Label(color="black", text=f"\n\nWithout Novated Lease: \n " + \
+                                           f"------------------------------ \n" + \
+                                           f"Financial Lease: ${round(normal_financing, 2)} \n" + \
+                                           f"Registration: ${round(normal_registration, 2)} \n" + \
+                                           f"Fuel: ${round(normal_fuel, 2)} \n" + \
+                                           f"Servicing: ${round(normal_maintenance, 2)} \n" + \
+                                           f"Insurance: ${round(normal_insurance, 2)} \n" + \
+                                           f"Tyres: ${round(tyres_cost, 2)} \n" + \
+                                           f"Roadside Assist: ${round(roadside_assist, 2)} \n" + \
+                                           f"Fees: N/A \n" + \
+                                           f"------------------------------ \n" + \
+                                           f"Normal Total: ${round(normal_total, 2)} \n")
+
+        # Novated Lease Results
+        label2 = Label(color="black", text=f"\n\nWith Novated Lease: \n " + \
+                                           f"------------------------------ \n" + \
+                                           f"Financial Lease: ${round(novated_financing, 2)} \n" + \
+                                           f"Registration: ${round(novated_registration, 2)} \n" + \
+                                           f"Fuel: ${round(novated_fuel, 2)} \n" + \
+                                           f"Servicing: ${round(novated_maintenance, 2)} \n" + \
+                                           f"Insurance: ${round(novated_insurance, 2)} \n" + \
+                                           f"Tyres: ${round(novated_tyres, 2)} \n" + \
+                                           f"Roadside Assist: ${round(novated_roadside, 2)} \n" + \
+                                           f"Fees: ${round(novated_fees, 2)} \n" + \
+                                           f"------------------------------ \n" + \
+                                           f"Novated Total: ${round(novated_total, 2)} \n")
+
+        # Total Results
+        label3 = Label(color="black", text=f"Totals: \n " + \
+                                           f"------------------------------ \n" + \
+                                           f"Yearly Tax Savings: $" + str(round(tax_savings, 2)) + \
+                                           f"\nFortnightly Payment: $" + str(round(novated_total / 26, 2)) + \
+                                           f"\nMonthly Payment: $" + str(round(novated_total / 12, 2)))
+
+        content = Content()
+
+        # Sets up PopUp and adds the different results
+        window = MDDialog(title=f"Results for {row_data[2]} at {row_data[1]}", type="custom", content_cls=content)
+        content.add_widget(label1)
+        content.add_widget(label2)
+        content.add_widget(label3)
+        window.open()  # OPENS popup
 
     def update_data(self, instance): # this function updates the datatable based on the query in the searchbar
         global datatable_data
